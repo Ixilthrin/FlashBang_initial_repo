@@ -26,6 +26,7 @@ using glm::vec4;
 #include "GenerateGeometryExample.h"
 #include "BasicGraphicsLoop.h"
 #include "BasicMouseSelection.h"
+#include "BasicCardDeck.h"
 
 #include "SampleModel.h"
 #include "SampleProjectionModel.h"
@@ -94,6 +95,12 @@ int runBasicMouseSelection()
 	return drawer.Draw();
 }
 
+int runBasicCardDeck()
+{
+	BasicCardDeck drawer;
+	return drawer.Draw();
+}
+
 void showVersionInfo(int result)
 {
 	cout << "Hello World from console" << endl;
@@ -124,7 +131,7 @@ void showVersionInfo(int result)
 int main(int argc, char* argv[])
 {
 	bool showInfo = false;
-	int programNumber = 9;
+	int programNumber = 10;
 	int result = 0;
 
 	switch (programNumber)
@@ -155,6 +162,9 @@ int main(int argc, char* argv[])
 		break;
 	case 9:
 		result = runBasicMouseSelection();
+		break;
+	case 10:
+		result = runBasicCardDeck();
 		break;
 	}
 

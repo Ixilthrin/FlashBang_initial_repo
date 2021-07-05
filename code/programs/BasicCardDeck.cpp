@@ -1,4 +1,4 @@
-#include "BasicMouseSelection.h"
+#include "BasicCardDeck.h"
 
 #include <iostream>
 #include <glad/glad.h>
@@ -23,15 +23,16 @@ using std::stringstream;
 
 #include "ImageReader.h"
 
-BasicMouseSelection::BasicMouseSelection()
+
+BasicCardDeck::BasicCardDeck()
 {
 }
 
-BasicMouseSelection::~BasicMouseSelection()
+BasicCardDeck::~BasicCardDeck()
 {
 }
 
-int BasicMouseSelection::Draw()
+int BasicCardDeck::Draw()
 {
 	GLFWwindow* window;
 
@@ -140,31 +141,31 @@ int BasicMouseSelection::Draw()
 
 	float colorData[] =
 	{
-		.82f, 0.41f, 0.14f, 
 		.82f, 0.41f, 0.14f,
-		1.0f, 0.0f, 0.0f, 
+		.82f, 0.41f, 0.14f,
+		1.0f, 0.0f, 0.0f,
 		1.0f, 0.0f, 0.0f
 	};
 
 	/*int indexData[] =
 	{
 		0, 1,
-		1, 2, 
-		2, 3, 
+		1, 2,
+		2, 3,
 		3, 0
 	};*/
 
 	int indexData[] =
 	{
-		0, 1, 2, 
+		0, 1, 2,
 		2, 3, 0
 	};
 
 	float texCoords[] =
 	{
-		0.0f, 0.0f, 
-		0.0f, 1.0f, 
-		1.0f, 1.0f, 
+		0.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
 		1.0f, 0.0f
 	};
 
@@ -218,29 +219,18 @@ int BasicMouseSelection::Draw()
 	glPointSize(5);
 	glLineWidth(3);
 
-	ImageReader imageProvider("c:/programming/FlashBangProject/resources/test.png");
-	
-	GLubyte* image = imageProvider.getImageData();
+	ImageReader imageReader("c:/programming/FlashBangProject/resources/test.png");
+	GLubyte* image = imageReader.getImageData();
 
 	if (image == nullptr)
 		throw(std::string("Failed to load image"));
 
-	std::cout << "test.png loaded   " 
-		<< imageProvider.getWidth()
-		<< "x" 
-		<< imageProvider.getHeight()
-		<< "    components: " 
-		<< imageProvider.getComponentCount()
-		<< "    size: " 
-		<< (imageProvider.getWidth()*imageProvider.getHeight()*imageProvider.getComponentCount()) << std::endl;
-
-
 	GLuint textureNames[1];
 	glCreateTextures(GL_TEXTURE_2D, 1, textureNames);
 
-	glTextureStorage2D(textureNames[0], 1, GL_RGB8, imageProvider.getWidth(), imageProvider.getHeight());
+	glTextureStorage2D(textureNames[0], 1, GL_RGB8, imageReader.getWidth(), imageReader.getHeight());
 	glBindTexture(GL_TEXTURE_2D, textureNames[0]);
-	glTextureSubImage2D(textureNames[0], 0, 0, 0, imageProvider.getWidth(), imageProvider.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, image);
+	glTextureSubImage2D(textureNames[0], 0, 0, 0, imageReader.getWidth(), imageReader.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, image);
 
 	glBindTextureUnit(0, textureNames[0]);
 
@@ -270,7 +260,7 @@ int BasicMouseSelection::Draw()
 				yTrans = converter.screenTranslationYToNDC(rectangle.getTranslationY());
 			}
 			glUniform2f(loc, xTrans, yTrans);
-		} 
+		}
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
