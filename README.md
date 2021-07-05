@@ -1,8 +1,9 @@
 # FlashBang
-I started this project as a name because I thought FlashBang was a great name 
-for a graphics engine + sound project. 
+I created this repository a while back as just a name because I thought 
+FlashBang was a great name for a graphics engine + sound project. 
+
 It's the 4th of July so I am going to officially kick off this project today 
-with code from a project I've been working on using GLFW, OpenGL 4.5, ...
+with code I've been working on using GLFW, OpenGL 4.5, ...
 
 This repository contains only my custom code for the project.  To build it you 
 need to get the glad library, the glfw library (version 3.3), and the glm 
@@ -13,9 +14,17 @@ You need to include stb_image.h in your project for png loading.
 See github project https://github.com/nothings/stb
 
 This program is composed of multiple sub-programs, each progressively exploring 
-OpenGL.  For example, program number 1 simply display a triangle.
+OpenGL.  For example, program number 1 simply displays a triangle.
 See the main function in main.cpp that has a hard-coded switch for the current 
 program.  Change the program number to run the one you want.
+
+Note that initially each program was self-contained.  I wanted to keep most of
+the drawing code in a single function so I could conceptually see everything
+that is needed to get a simple OpenGL 4.5 app working.  Eventually the rendering
+code will be refactored into small individual components.  The refactoring will
+be applied to current programs only.  The older programs will not be touched in order
+to be able to show the general progression of code as the projects become more
+and more complex.
 
 I am currently working on program 9 that runs the class BasicMouseSelection.  
 I am using this program to build out a more complex app where you can select and
