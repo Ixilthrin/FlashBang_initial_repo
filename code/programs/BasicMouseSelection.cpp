@@ -21,8 +21,7 @@ using std::stringstream;
 #include "Rectangle.h"
 #include "Converter.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "ImageReader.h"
 
 BasicMouseSelection::BasicMouseSelection()
 {
@@ -222,23 +221,30 @@ int BasicMouseSelection::Draw()
 	int w;
 	int h;
 	int comp;
-	GLubyte* image = stbi_load("c:/programming/FlashBangProject/resources/test.png", &w, &h, &comp, STBI_rgb);
+
+	ImageReader imageProvider("c:/programming/FlashBangProject/resources/test.png");
+	
+	GLubyte* image = imageProvider.getImageData();
 
 	if (image == nullptr)
 		throw(std::string("Failed to load image"));
 
-	std::cout << "test.png loaded   " << w << "x" << h << "    components: " << comp << "    size: " << (w*h*comp) << std::endl;
+	std::cout << "test.png loaded   " 
+		<< imageProvider.getWidth()
+		<< "x" 
+		<< imageProvider.getHeight()
+		<< "    components: " 
+		<< imageProvider.getComponentCount()
+		<< "    size: " 
+		<< (imageProvider.getWidth()*imageProvider.getHeight()*imageProvider.getComponentCount()) << std::endl;
 
 
 	GLuint textureNames[1];
 	glCreateTextures(GL_TEXTURE_2D, 1, textureNames);
 
-	glTextureStorage2D(textureNames[0], 1, GL_RGB8, w, h);
+	glTextureStorage2D(textureNames[0], 1, GL_RGB8, imageProvider.getWidth(), imageProvider.getHeight());
 	glBindTexture(GL_TEXTURE_2D, textureNames[0]);
-	glTextureSubImage2D(textureNames[0], 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, image);
-
-
-	stbi_image_free(image);
+	glTextureSubImage2D(textureNames[0], 0, 0, 0, imageProvider.getWidth(), imageProvider.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, image);
 
 	glBindTextureUnit(0, textureNames[0]);
 
