@@ -54,7 +54,7 @@ int BasicTriangle::Draw()
 		return -4;
 
 	ShaderSource shaderSource;
-	string shaderCode = shaderSource.ReadShaderFromFile("c:/programming/ProjectDays2019/shaders/basic.vert.glsl");
+	string shaderCode = shaderSource.ReadShaderFromFile("c:/programming/FlashBang/shaders/basic.vert.glsl");
 	const GLchar *codeArray[] = { shaderCode.c_str() };
 
 	glShaderSource(vertShader, 1, codeArray, NULL);
@@ -70,7 +70,7 @@ int BasicTriangle::Draw()
 	if (fragShader == 0)
 		return -6;
 
-	string fragCode = shaderSource.ReadShaderFromFile("c:/programming/ProjectDays2019/shaders/basic.frag.glsl");
+	string fragCode = shaderSource.ReadShaderFromFile("c:/programming/FlashBang/shaders/basic.frag.glsl");
 	const GLchar *fragArray[] = { fragCode.c_str() };
 
 	glShaderSource(fragShader, 1, fragArray, NULL);
