@@ -222,7 +222,7 @@ int BasicMouseSelection::Draw()
 	int w;
 	int h;
 	int comp;
-	GLubyte* image = stbi_load("c:/Users/David/Pictures/test.png", &w, &h, &comp, STBI_rgb);
+	GLubyte* image = stbi_load("c:/programming/FlashBangProject/resources/test.png", &w, &h, &comp, STBI_rgb);
 
 	if (image == nullptr)
 		throw(std::string("Failed to load image"));
