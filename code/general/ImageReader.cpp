@@ -22,7 +22,7 @@ ImageReader::~ImageReader()
 
 void ImageReader::LoadData()
 {
-	_imageData = stbi_load(_filePath.c_str(), &_width, &_height, &_componentCount, STBI_rgb);
+	_imageData = stbi_load(_filePath.c_str(), &_width, &_height, &_componentCount, STBI_rgb_alpha);
 	_dataWasLoaded = true;
 }
 

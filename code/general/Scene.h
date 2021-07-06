@@ -18,5 +18,5 @@ public:
 	void bringToTop(int id);
 	void addImageCard(int id, std::string imagePath, int x, int y);
 	void addCards(std::vector<std::string> filenames);
-	void addCardsFromDefaultDirectory();
+	void addCardsFromDirectory(std::string basepath);
 };

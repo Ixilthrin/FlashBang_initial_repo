@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <sstream>
 #include <fstream>
+#include <vector>
+#include <map>
+#include <string>
 
 using std::endl;
 using std::cout;
@@ -13,8 +16,9 @@ using std::cerr;
 using std::string;
 using std::ifstream;
 using std::stringstream;
-
-#include <map>
+using std::map;
+using std::pair;
+using std::vector;
 
 #include "DispatchingMouseHandlers.h" // Interesting: putting this after next line causes link errors
 #include <GLFW/glfw3.h>
@@ -58,9 +62,19 @@ int BasicCardDeck::Draw()
 		return -3;
 
 
+	string targetFile;
+	ifstream myfile("c:/programming/FlashBangProject/flashbang.props");
+	if (myfile.is_open())
+	{
+		getline(myfile, targetFile);
+		myfile.close();
+	}
+
+	string basedir = "c:/programming/FlashBangProject/" + targetFile + "/";
+
 	Scene scene;
 
-	scene.addCardsFromDefaultDirectory();
+	scene.addCardsFromDirectory(basedir);
 
 	GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
 	if (vertShader == 0)
@@ -168,34 +182,32 @@ int BasicCardDeck::Draw()
 
 	GLint loc = glGetUniformLocation(programHandle, "Translation");
 
-	glClearColor(0, 0, 0, 1);
-	glPointSize(5);
-	glLineWidth(3);
 
 	GLuint *textureNames = new GLuint[scene.size()];
 	glCreateTextures(GL_TEXTURE_2D, scene.size(), textureNames);
 
-	std::map<int, GLuint> textures;
+	map<int, GLuint> textures;
 	auto ids = scene.getIds();
 	int currentTexture = 0;
 	for (auto id = ids.begin(); id < ids.end(); id++) 
 	{
-		std::cout << "drawing id: " << *id << std::endl;
-		textures.insert(std::pair<int, GLuint>(*id, textureNames[currentTexture]));
+		cout << "drawing id: " << *id << endl;
+		textures.insert(pair<int, GLuint>(*id, textureNames[currentTexture]));
 
 		ImageReader reader(scene.get(*id)->getImagePath());
 
 		GLubyte* image = reader.getImageData();
+		cout << "4: " << (int)image[4] << endl;
 		int imageWidth = reader.getWidth();
 		int imageHeight = reader.getHeight();
-		std::cout << "width: " << imageWidth << "   height: " << imageHeight << std::endl;
+		cout << "width: " << imageWidth << "   height: " << imageHeight << "   comp:  " << reader.getComponentCount() << endl;
 
-		glTextureStorage2D(textureNames[currentTexture], 1, GL_RGB8, imageWidth, imageHeight);
+		glTextureStorage2D(textureNames[currentTexture], 1, GL_RGBA8, imageWidth, imageHeight);
 		glBindTexture(GL_TEXTURE_2D, textureNames[currentTexture]);
 
 		if (image == nullptr)
-			throw(std::string("Failed to load image"));
-		glTextureSubImage2D(textureNames[currentTexture], 0, 0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, image);
+			throw(string("Failed to load image"));
+		glTextureSubImage2D(textureNames[currentTexture], 0, 0, 0, imageWidth, imageHeight, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
 		++currentTexture;
 	}
@@ -209,20 +221,27 @@ int BasicCardDeck::Draw()
 	glfwSetMouseButtonCallback(window, DispatchingMouseHandlers::mouse_button_callback);
 	glfwSetScrollCallback(window, DispatchingMouseHandlers::scroll_callback);
 
-
 	glfwSwapInterval(1);
 	glBindVertexArray(vaoHandle);
-	
+
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glCullFace(GL_BACK);
+	glClearColor(.6, .6, .6, 1);
+	glPointSize(5);
+	glLineWidth(3);
+	//glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window))
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		if (loc != -1)
 		{
 			float xTrans, yTrans;
 
-			std::vector<int> items = scene.getIds();
+			vector<int> items = scene.getIds();
 			int objectCount = 0;
 			for (auto i = items.begin(); i < items.end(); i++)
 			{
@@ -239,7 +258,7 @@ int BasicCardDeck::Draw()
 					yTrans = converter.screenTranslationYToNDC(scene.get(*i)->getTranslationY());
 				}
 
-				std::vector<int> indexData = scene.get(0)->getIndexData();
+				vector<int> indexData = scene.get(0)->getIndexData();
 				glUniform2f(loc, xTrans, yTrans);
 				glDrawRangeElements(GL_TRIANGLES, 0, 5, 6, GL_UNSIGNED_INT, indexData.data());
 				//glDrawRangeElements(GL_TRIANGLES, 0, 5, 3, GL_UNSIGNED_INT, indexData.data());

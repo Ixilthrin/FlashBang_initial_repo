@@ -62,13 +62,13 @@ void Scene::addCards(std::vector<std::string> filenames)
 	}
 }
 
-void Scene::addCardsFromDefaultDirectory()
+void Scene::addCardsFromDirectory(std::string basepath)
 {
 	int x = 50;
 	int y = 50;
 	int id = 0;
 
-	std::string basepath = "c:/programming/FlashBangProject/resources/";
+	//std::string basepath = "c:/programming/FlashBangProject/resources/";
 	for (const auto &entry : fs::directory_iterator(basepath))
 	{
 		std::string path{ entry.path().u8string() };
@@ -76,8 +76,8 @@ void Scene::addCardsFromDefaultDirectory()
 		{
 			addImageCard(id, path, x, y);
 			++id;
-			x += 10;
-			y += 10;
+			x += 1;
+			y += 1;
 		}
 	}
 }
