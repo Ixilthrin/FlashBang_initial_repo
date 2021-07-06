@@ -35,4 +35,12 @@ files and uses texture mapping to display them over simple rectangles.
 I am currently working on program 10 that will serve as the prototype for my
 "deck of cards" program.  This is analogous to having a deck of index cards that
 you write up and then organize on a table to design something or explain something.
+I have it working so you can create a PNG file (works best is width and height are 
+powers of 2) and then save it into the default directory.  When hou run the card
+deck app it will automatically load in all the PNG files from that designated 
+directory.
+
+I want future versions to support cards with multiple sides, being able to draw and
+erase, and better card deck organization, such as being able to open from a specified
+file and being able to randomize the deck.
 
