@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Scene.h"
 #include "Rectangle.h"
 
 class InputListener
@@ -8,15 +9,16 @@ private:
 	int _mouseX;
 	int _mouseY;
 	bool _selectAndMoveInProgress;
-	Rectangle *_rectangle;
+	Scene *_scene;
 	int _selectionStartX;
 	int _selectionStartY;
+	int _selectedId;
 
 public:
 	InputListener();
-	inline void setRectangle(Rectangle *r)
+	inline void setScene(Scene *scene)
 	{
-		_rectangle = r;
+		_scene = scene;
 	}
 
 	inline int getMovementX()
@@ -36,4 +38,5 @@ public:
 	bool isSelectAndMoveInProgress();
 	int getMouseX();
 	int getMouseY();
+	int getSelectedId();
 };

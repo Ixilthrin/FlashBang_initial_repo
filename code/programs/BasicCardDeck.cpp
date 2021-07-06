@@ -14,14 +14,17 @@ using std::string;
 using std::ifstream;
 using std::stringstream;
 
+#include <map>
+
 #include "DispatchingMouseHandlers.h" // Interesting: putting this after next line causes link errors
 #include <GLFW/glfw3.h>
 
-#include "ShaderSource.h"
+#include "Scene.h"
 #include "Rectangle.h"
 #include "Converter.h"
 
 #include "ImageReader.h"
+#include "ShaderProgramFactory.h"
 
 
 BasicCardDeck::BasicCardDeck()
@@ -36,13 +39,12 @@ int BasicCardDeck::Draw()
 {
 	GLFWwindow* window;
 
-	/* Initialize the library */
 	if (!glfwInit())
 		return -1;
 
-	int width = 640;
-	int height = 480;
-	window = glfwCreateWindow(width, height, "Select and Move sample application", NULL, NULL);
+	int width = 1200;
+	int height = 800;
+	window = glfwCreateWindow(width, height, "Select and Move Multiple Objects Prototype", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -54,71 +56,61 @@ int BasicCardDeck::Draw()
 	if (!gladLoadGL())
 		return -3;
 
+	Scene scene;
+
+	ImageReader imageReader1("c:/programming/FlashBangProject/resources/test.png");
+
+	Rectangle rectangle1{ 200, 100, 20, 50, &imageReader1,
+		"c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl",
+		"c:/programming/FlashBang/shaders/texture.frag.glsl"
+	};
+
+	scene.add(0, &rectangle1);
+
+	ImageReader imageReader2("c:/programming/FlashBangProject/resources/stanleykubrick.png");
+
+	Rectangle rectangle2{ 200, 100, 24, 54, &imageReader2,
+		"c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl",
+		"c:/programming/FlashBang/shaders/texture.frag.glsl"
+	};
+
+	scene.add(1, &rectangle2);
+
+	ImageReader imageReader3("c:/programming/FlashBangProject/resources/pkd.png");
+
+	Rectangle rectangle3{ 200, 100, 28, 58, &imageReader3,
+		"c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl",
+		"c:/programming/FlashBang/shaders/texture.frag.glsl"
+	};
+
+	scene.add(2, &rectangle3);
+
 	GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
 	if (vertShader == 0)
 		return -4;
 
-	ShaderSource shaderSource;
-	string shaderCode = shaderSource.ReadShaderFromFile("c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl");
-	const GLchar *codeArray[] = { shaderCode.c_str() };
-
-	glShaderSource(vertShader, 1, codeArray, NULL);
-
-	glCompileShader(vertShader);
-
-	GLint result;
-	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE || shaderCode.length() < 1)
-		return -5;
-
-	GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	if (fragShader == 0)
-		return -6;
-
-	string fragCode = shaderSource.ReadShaderFromFile("c:/programming/FlashBang/shaders/texture.frag.glsl");
-	const GLchar *fragArray[] = { fragCode.c_str() };
-
-	glShaderSource(fragShader, 1, fragArray, NULL);
-
-	glCompileShader(fragShader);
-
-	GLint fragResult;
-	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &fragResult);
-	if (fragResult == GL_FALSE || fragCode.length() < 1)
-		return -7;
-
-	GLuint programHandle = glCreateProgram();
-	if (programHandle == 0)
-		return -8;
-
-	glAttachShader(programHandle, vertShader);
-	glAttachShader(programHandle, fragShader);
-
-	glLinkProgram(programHandle);
-
-	GLint linkStatus;
-	glGetProgramiv(programHandle, GL_LINK_STATUS, &linkStatus);
-	if (linkStatus == GL_FALSE)
-		return -9;
+	GLuint programHandle = ShaderProgramFactory::BuildShaderProgram(
+		scene.get(0)->getVertShaderPath(),
+		scene.get(0)->getFragShaderPath()
+	);
 
 	glUseProgram(programHandle);
 
-	glDetachShader(programHandle, vertShader);
-	glDetachShader(programHandle, fragShader);
+	//glDetachShader(programHandle, vertShader);
+	//glDetachShader(programHandle, fragShader);
 
-	glDeleteShader(vertShader);
-	glDeleteShader(fragShader);
+	//glDeleteShader(vertShader);
+	//glDeleteShader(fragShader);
 
-	GLuint vaoHandle;
-
-	Rectangle rectangle{ 200, 100, 20, 50 };
+	InputListener listener;
+	listener.setScene(&scene);
 
 	Converter converter{ width, height };
 
 	float x1 = converter.screenXToNDC(0);
 	float y1 = converter.screenYToNDC(0);
-	float x2 = converter.screenXToNDC(rectangle.getWidth());
-	float y2 = converter.screenYToNDC(rectangle.getHeight());
+	float x2 = converter.screenXToNDC(scene.get(0)->getWidth());
+	float y2 = converter.screenYToNDC(scene.get(0)->getHeight());
 
 	float positionData[] =
 	{
@@ -147,20 +139,6 @@ int BasicCardDeck::Draw()
 		1.0f, 0.0f, 0.0f
 	};
 
-	/*int indexData[] =
-	{
-		0, 1,
-		1, 2,
-		2, 3,
-		3, 0
-	};*/
-
-	int indexData[] =
-	{
-		0, 1, 2,
-		2, 3, 0
-	};
-
 	float texCoords[] =
 	{
 		0.0f, 0.0f,
@@ -171,7 +149,6 @@ int BasicCardDeck::Draw()
 
 	int positionLength = sizeof(positionData) / sizeof(positionData[0]);
 	int colorDataLength = sizeof(colorData) / sizeof(colorData[0]);
-	int indexLength = sizeof(indexData) / sizeof(indexData[0]);
 	int texCoordLength = sizeof(texCoords) / sizeof(texCoords[0]);
 
 	GLuint vboHandles[3];
@@ -190,6 +167,8 @@ int BasicCardDeck::Draw()
 	glBindBuffer(GL_ARRAY_BUFFER, texCoordsBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER, texCoordLength * sizeof(float), texCoords, GL_STATIC_DRAW);
 
+
+	GLuint vaoHandle;
 	glGenVertexArrays(1, &vaoHandle);
 	glBindVertexArray(vaoHandle);
 
@@ -210,29 +189,38 @@ int BasicCardDeck::Draw()
 	glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
 	glVertexAttribBinding(2, 2);
 
-	InputListener listener;
-	listener.setRectangle(&rectangle);
-
 	GLint loc = glGetUniformLocation(programHandle, "Translation");
 
 	glClearColor(0, 0, 0, 1);
 	glPointSize(5);
 	glLineWidth(3);
 
-	ImageReader imageReader("c:/programming/FlashBangProject/resources/test.png");
-	GLubyte* image = imageReader.getImageData();
+	GLuint textureNames[3];
+	glCreateTextures(GL_TEXTURE_2D, 3, textureNames);
 
-	if (image == nullptr)
-		throw(std::string("Failed to load image"));
+	std::map<int, GLuint> textures;
+	auto ids = scene.getIds();
+	int currentTexture = 0;
+	for (auto id = ids.begin(); id < ids.end(); id++) 
+	{
+		std::cout << "drawing id: " << *id << std::endl;
+		textures.insert(std::pair<int, GLuint>(*id, textureNames[currentTexture]));
 
-	GLuint textureNames[1];
-	glCreateTextures(GL_TEXTURE_2D, 1, textureNames);
+		GLubyte* image = scene.get(*id)->getImage()->getImageData();
+		int imageWidth = scene.get(*id)->getImage()->getWidth();
+		int imageHeight = scene.get(*id)->getImage()->getHeight();
+		std::cout << "width: " << imageWidth << "   height: " << imageHeight << std::endl;
 
-	glTextureStorage2D(textureNames[0], 1, GL_RGB8, imageReader.getWidth(), imageReader.getHeight());
-	glBindTexture(GL_TEXTURE_2D, textureNames[0]);
-	glTextureSubImage2D(textureNames[0], 0, 0, 0, imageReader.getWidth(), imageReader.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, image);
+		glTextureStorage2D(textureNames[currentTexture], 1, GL_RGB8, imageWidth, imageHeight);
+		glBindTexture(GL_TEXTURE_2D, textureNames[currentTexture]);
 
-	glBindTextureUnit(0, textureNames[0]);
+		if (image == nullptr)
+			throw(std::string("Failed to load image"));
+		glTextureSubImage2D(textureNames[currentTexture], 0, 0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, image);
+
+
+		++currentTexture;
+	}
 
 	EventTranslator translator;
 
@@ -246,27 +234,39 @@ int BasicCardDeck::Draw()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		if (loc != -1)
-		{
-			float xTrans, yTrans;
-			if (listener.isSelectAndMoveInProgress())
-			{
-				xTrans = converter.screenTranslationXToNDC(rectangle.getTranslationX() + listener.getMovementX());
-				yTrans = converter.screenTranslationYToNDC(rectangle.getTranslationY() + listener.getMovementY());
-			}
-			else
-			{
-				xTrans = converter.screenTranslationXToNDC(rectangle.getTranslationX());
-				yTrans = converter.screenTranslationYToNDC(rectangle.getTranslationY());
-			}
-			glUniform2f(loc, xTrans, yTrans);
-		}
-
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glBindVertexArray(vaoHandle);
 
-		glDrawElements(GL_TRIANGLES, indexLength, GL_UNSIGNED_INT, indexData);
+		if (loc != -1)
+		{
+			float xTrans, yTrans;
+
+			std::vector<int> items = scene.getIds();
+			int objectCount = 0;
+			for (auto i = items.begin(); i < items.end(); i++)
+			{
+				glBindTextureUnit(0, textures[*i]);
+				int selected = listener.getSelectedId();
+				if (listener.isSelectAndMoveInProgress() && selected == *i)
+				{
+					xTrans = converter.screenTranslationXToNDC(scene.get(selected)->getTranslationX() + listener.getMovementX());
+					yTrans = converter.screenTranslationYToNDC(scene.get(selected)->getTranslationY() + listener.getMovementY());
+				}
+				else
+				{
+					xTrans = converter.screenTranslationXToNDC(scene.get(*i)->getTranslationX());
+					yTrans = converter.screenTranslationYToNDC(scene.get(*i)->getTranslationY());
+				}
+
+				std::vector<int> indexData = scene.get(0)->getIndexData();
+				glUniform2f(loc, xTrans, yTrans);
+				glDrawRangeElements(GL_TRIANGLES, 0, 5, 6, GL_UNSIGNED_INT, indexData.data());
+				//glDrawRangeElements(GL_TRIANGLES, 0, 5, 3, GL_UNSIGNED_INT, indexData.data());
+			}
+
+		}
+
 
 		glfwSwapBuffers(window);
 

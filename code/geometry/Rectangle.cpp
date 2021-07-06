@@ -1,12 +1,21 @@
 #include "Rectangle.h"
 
-
-Rectangle::Rectangle(int width, int height, int translationX, int translationY)
+Rectangle::Rectangle(
+	int width, 
+	int height, 
+	int translationX, 
+	int translationY, 
+	ImageReader *image,
+	std::string vertShaderPath,
+	std::string fragShaderPath)
 {
 	_width = width;
 	_height = height;
 	_translationX = translationX;
 	_translationY = translationY;
+	_image = image;
+	_vertShaderPath = vertShaderPath;
+	_fragShaderPath = fragShaderPath;
 }
 
 void Rectangle::setTranslationX(int translation)
@@ -39,6 +48,11 @@ int Rectangle::getTranslationY()
 	return _translationY;
 }
 
+ImageReader *Rectangle::getImage()
+{
+	return _image;
+}
+
 bool Rectangle::contains(int x, int y)
 {
 	if (x > _translationX
@@ -50,4 +64,24 @@ bool Rectangle::contains(int x, int y)
 	}
 
 	return false;
+}
+
+std::vector<int> Rectangle::getIndexData()
+{
+	std::vector<int> indexData
+	{
+		0, 1, 2,
+		2, 3, 0
+	};
+	return indexData;
+}
+
+std::string Rectangle::getVertShaderPath()
+{
+	return _vertShaderPath;
+}
+
+std::string Rectangle::getFragShaderPath()
+{
+	return _fragShaderPath;
 }

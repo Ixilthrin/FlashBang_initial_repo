@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 	bool showInfo = false;
 	int programNumber = 10;
 	int result = 0;
-
+	printf("Program Number %d\n", programNumber);
 	switch (programNumber)
 	{
 	case 1:

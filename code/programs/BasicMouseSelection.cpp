@@ -111,6 +111,8 @@ int BasicMouseSelection::Draw()
 	GLuint vaoHandle;
 
 	Rectangle rectangle{ 200, 100, 20, 50 };
+	Scene scene;
+	scene.add(0, &rectangle);
 
 	Converter converter{ width, height };
 
@@ -145,14 +147,6 @@ int BasicMouseSelection::Draw()
 		1.0f, 0.0f, 0.0f, 
 		1.0f, 0.0f, 0.0f
 	};
-
-	/*int indexData[] =
-	{
-		0, 1,
-		1, 2, 
-		2, 3, 
-		3, 0
-	};*/
 
 	int indexData[] =
 	{
@@ -210,7 +204,7 @@ int BasicMouseSelection::Draw()
 	glVertexAttribBinding(2, 2);
 
 	InputListener listener;
-	listener.setRectangle(&rectangle);
+	listener.setScene(&scene);
 
 	GLint loc = glGetUniformLocation(programHandle, "Translation");
 
