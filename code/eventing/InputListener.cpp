@@ -45,7 +45,7 @@ void InputListener::moveSelection(int x, int y)
 	}
 	else if (rect && rect->contains(x, y))
 	{
-		std::cout << "Mouse Over" << std::endl;
+		//std::cout << "Mouse Over" << std::endl;
 	}
 }
 

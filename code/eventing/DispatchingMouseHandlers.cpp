@@ -18,11 +18,11 @@ void DispatchingMouseHandlers::cursor_enter_callback(GLFWwindow* window, int ent
 {
 	if (entered)
 	{
-		std::cout << "Hello Mouse" << std::endl;
+		//std::cout << "Hello Mouse" << std::endl;
 	}
 	else
 	{
-		std::cout << "Goodbye Mouse" << std::endl;
+		//std::cout << "Goodbye Mouse" << std::endl;
 	}
 }
 void DispatchingMouseHandlers::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -42,5 +42,5 @@ void DispatchingMouseHandlers::mouse_button_callback(GLFWwindow* window, int but
 }
 void DispatchingMouseHandlers::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	std::cout << "Scrolling" << std::endl;
+	//std::cout << "Scrolling" << std::endl;
 }

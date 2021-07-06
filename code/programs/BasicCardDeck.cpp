@@ -42,8 +42,8 @@ int BasicCardDeck::Draw()
 	if (!glfwInit())
 		return -1;
 
-	int width = 1200;
-	int height = 800;
+	int width = 1600;
+	int height = 900;
 	window = glfwCreateWindow(width, height, "Select and Move Multiple Objects Prototype", NULL, NULL);
 	if (!window)
 	{
@@ -53,24 +53,14 @@ int BasicCardDeck::Draw()
 
 	glfwMakeContextCurrent(window); 
 
-	glfwSwapInterval(1);
 
 	if (!gladLoadGL())
 		return -3;
 
+
 	Scene scene;
 
-	std::vector<std::string> cards {
-		"stanleykubrick.png",
-		"test.png",
-		"pkd.png",
-		"ben.png",
-		"odyssey.png",
-		"androids.png",
-		"teslaofhisday.png",
-		"nicola.png"
-	};
-	scene.addCards(cards);
+	scene.addCardsFromDefaultDirectory();
 
 	GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
 	if (vertShader == 0)
@@ -220,11 +210,13 @@ int BasicCardDeck::Draw()
 	glfwSetScrollCallback(window, DispatchingMouseHandlers::scroll_callback);
 
 
+	glfwSwapInterval(1);
+	glBindVertexArray(vaoHandle);
+	
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glBindVertexArray(vaoHandle);
 
 		if (loc != -1)
 		{
