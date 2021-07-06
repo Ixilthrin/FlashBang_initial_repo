@@ -26,14 +26,13 @@ be applied to current programs only.  The older programs will not be touched in 
 to be able to show the general progression of code as the projects become more
 and more complex.
 
-I am currently working on program 9 that runs the class BasicMouseSelection.  
-I am using this program to build out a more complex app where you can select and
-move objects around the screen.  For this program I developed a simple eventing 
-model that takes the raw input events and translates them to something more 
-intuitive.  For example a left click becomes a selection event  I also created a 
-converter class that converts from screen space to OpenGL NDC (normalized device 
-coordinates).  This program also loads PNG files and uses texture mapping to display
-them over simple rectangles.  The next step I am working on is to have multiple
-cards on the screen, each displaying an image.  You will be able to move the cards
-around and even stack them and be able to cycle through a stack using a z value for 
-each card.
+For this project I developed a simple eventing model that takes the raw input 
+events and translates them to something more intuitive.  For example a left click 
+becomes a selection event  I also created a converter class that converts from screen
+space to OpenGL NDC (normalized device coordinates).  This program also loads PNG 
+files and uses texture mapping to display them over simple rectangles. 
+
+I am currently working on program 10 that will serve as the prototype for my
+"deck of cards" program.  This is analogous to having a deck of index cards that
+you write up and then organize on a table to design something or explain something.
+
