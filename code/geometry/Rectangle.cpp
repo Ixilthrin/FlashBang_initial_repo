@@ -5,7 +5,7 @@ Rectangle::Rectangle(
 	int height, 
 	int translationX, 
 	int translationY, 
-	ImageReader *image,
+	std::string imagePath,
 	std::string vertShaderPath,
 	std::string fragShaderPath)
 {
@@ -13,7 +13,7 @@ Rectangle::Rectangle(
 	_height = height;
 	_translationX = translationX;
 	_translationY = translationY;
-	_image = image;
+	_imagePath = imagePath;
 	_vertShaderPath = vertShaderPath;
 	_fragShaderPath = fragShaderPath;
 }
@@ -48,9 +48,9 @@ int Rectangle::getTranslationY()
 	return _translationY;
 }
 
-ImageReader *Rectangle::getImage()
+std::string Rectangle::getImagePath()
 {
-	return _image;
+	return _imagePath;
 }
 
 bool Rectangle::contains(int x, int y)

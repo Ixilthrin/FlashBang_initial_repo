@@ -11,7 +11,7 @@ private:
 	int _height;
 	int _translationX;
 	int _translationY;
-	ImageReader *_image;
+	std::string _imagePath;
 	std::string _vertShaderPath;
 	std::string _fragShaderPath;
 
@@ -20,7 +20,7 @@ public:
 		int height,
 		int translationX,
 		int translationY,
-		ImageReader *image = 0,
+		std::string imagePath = "",
 		std::string vertShaderPath = "",
 		std::string fragShaderPath = "");
 
@@ -30,7 +30,7 @@ public:
 	int getHeight();
 	int getTranslationX();
 	int getTranslationY();
-	ImageReader *getImage();
+	std::string getImagePath();
 	bool contains(int x, int y);
 	std::vector<int> getIndexData();
 	std::string getVertShaderPath();

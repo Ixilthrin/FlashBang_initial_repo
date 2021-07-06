@@ -51,39 +51,26 @@ int BasicCardDeck::Draw()
 		return -2;
 	}
 
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(window); 
+
+	glfwSwapInterval(1);
 
 	if (!gladLoadGL())
 		return -3;
 
 	Scene scene;
 
-	ImageReader imageReader1("c:/programming/FlashBangProject/resources/test.png");
-
-	Rectangle rectangle1{ 200, 100, 20, 50, &imageReader1,
-		"c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl",
-		"c:/programming/FlashBang/shaders/texture.frag.glsl"
+	std::vector<std::string> cards {
+		"stanleykubrick.png",
+		"test.png",
+		"pkd.png",
+		"ben.png",
+		"odyssey.png",
+		"androids.png",
+		"teslaofhisday.png",
+		"nicola.png"
 	};
-
-	scene.add(0, &rectangle1);
-
-	ImageReader imageReader2("c:/programming/FlashBangProject/resources/stanleykubrick.png");
-
-	Rectangle rectangle2{ 200, 100, 24, 54, &imageReader2,
-		"c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl",
-		"c:/programming/FlashBang/shaders/texture.frag.glsl"
-	};
-
-	scene.add(1, &rectangle2);
-
-	ImageReader imageReader3("c:/programming/FlashBangProject/resources/pkd.png");
-
-	Rectangle rectangle3{ 200, 100, 28, 58, &imageReader3,
-		"c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl",
-		"c:/programming/FlashBang/shaders/texture.frag.glsl"
-	};
-
-	scene.add(2, &rectangle3);
+	scene.addCards(cards);
 
 	GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
 	if (vertShader == 0)
@@ -195,8 +182,8 @@ int BasicCardDeck::Draw()
 	glPointSize(5);
 	glLineWidth(3);
 
-	GLuint textureNames[3];
-	glCreateTextures(GL_TEXTURE_2D, 3, textureNames);
+	GLuint *textureNames = new GLuint[scene.size()];
+	glCreateTextures(GL_TEXTURE_2D, scene.size(), textureNames);
 
 	std::map<int, GLuint> textures;
 	auto ids = scene.getIds();
@@ -206,9 +193,11 @@ int BasicCardDeck::Draw()
 		std::cout << "drawing id: " << *id << std::endl;
 		textures.insert(std::pair<int, GLuint>(*id, textureNames[currentTexture]));
 
-		GLubyte* image = scene.get(*id)->getImage()->getImageData();
-		int imageWidth = scene.get(*id)->getImage()->getWidth();
-		int imageHeight = scene.get(*id)->getImage()->getHeight();
+		ImageReader reader(scene.get(*id)->getImagePath());
+
+		GLubyte* image = reader.getImageData();
+		int imageWidth = reader.getWidth();
+		int imageHeight = reader.getHeight();
 		std::cout << "width: " << imageWidth << "   height: " << imageHeight << std::endl;
 
 		glTextureStorage2D(textureNames[currentTexture], 1, GL_RGB8, imageWidth, imageHeight);
@@ -217,7 +206,6 @@ int BasicCardDeck::Draw()
 		if (image == nullptr)
 			throw(std::string("Failed to load image"));
 		glTextureSubImage2D(textureNames[currentTexture], 0, 0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, image);
-
 
 		++currentTexture;
 	}
@@ -273,7 +261,8 @@ int BasicCardDeck::Draw()
 		glfwPollEvents();
 	}
 
-	glDeleteTextures(1, textureNames);
+	glDeleteTextures(scene.size(), textureNames);
+	delete[] textureNames;
 
 	return 0;
 }

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 #include "Rectangle.h"
 
 class Scene
@@ -15,4 +16,6 @@ public:
 	std::vector<int> getIds();
 	Rectangle *get(int id);
 	void bringToTop(int id);
+	void addImageCard(int id, std::string imagePath, int x, int y);
+	void addCards(std::vector<std::string> filenames);
 };
