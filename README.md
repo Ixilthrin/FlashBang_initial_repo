@@ -35,12 +35,13 @@ files and uses texture mapping to display them over simple rectangles.
 I am currently working on program 10 that will serve as the prototype for my
 "deck of cards" program.  This is analogous to having a deck of index cards that
 you write up and then organize on a table to design something or explain something.
-I have it working so you can create a PNG file (works best is width and height are 
-powers of 2) and then save it into the default directory.  When hou run the card
-deck app it will automatically load in all the PNG files from that designated 
-directory.
+I have it working so you can create a PNG file and then save it into the designated 
+directory.  When you run the card deck app it will automatically load in all the PNG 
+files from that designated directory.
 
-I want future versions to support cards with multiple sides, being able to draw and
-erase, and better card deck organization, such as being able to open from a specified
-file and being able to randomize the deck.
+Most recently added the flip side to cards.  If you want a card to have a flip side,
+create a png file with the same name appended with "-back".  For example, if you have
+a card called mycard.png, the flip side will be mycard-back.png.  To flip a card
+perform a right-click on it.
+
 
