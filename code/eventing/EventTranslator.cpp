@@ -22,4 +22,8 @@ void EventTranslator::translateMouseEvent(EventType type)
 	{
 		_listener->endSelect(_mouseX, _mouseY);
 	}
+	else if (_listener && type == RightMouseUp)
+	{
+		_listener->flip(_mouseX, _mouseY);
+	}
 }

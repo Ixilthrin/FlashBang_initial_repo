@@ -4,25 +4,40 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
-void Scene::add(int id, Rectangle *rectangle)
+#include <iostream>
+
+void Scene::add(int id, Card *card)
 {
-	_rectangles.insert(std::pair<int, Rectangle*>(id, rectangle));
+	_cards.insert(pair<int, Card*>(id, card));
 	_ids.push_back(id);
 }
 
 int Scene::size()
 {
-	return _rectangles.size();
+	return _cards.size();
 }
 
-std::vector<int> Scene::getIds()
+int Scene::numberOfCardSides()
+{
+	int numberOfSides = 0;
+	for (auto const& cardPair : _cards)
+	{
+		++numberOfSides;
+		auto card = cardPair.second;
+		if (card->hasFlipSide())
+			++numberOfSides;
+	}
+	return numberOfSides;
+}
+
+vector<int> Scene::getIds()
 {
 	return _ids;
 }
 
-Rectangle *Scene::get(int id)
+Card *Scene::get(int id)
 {
-	return _rectangles[id];
+	return _cards[id];
 }
 
 void Scene::bringToTop(int id)
@@ -37,47 +52,86 @@ void Scene::bringToTop(int id)
 	_ids.push_back(id);
 }
 
-void Scene::addImageCard(int id, std::string imageFile, int x, int y)
+void Scene::addImageCard(int id, int x, int y,
+	string imageFile, string backImageFile)
 {
-	Rectangle *rectangle = new Rectangle{ 128, 128, x, y, imageFile,
+	Card *card = new Card{ 128, 128, x, y, imageFile,
 		"c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl",
 		"c:/programming/FlashBang/shaders/texture.frag.glsl"
 	};
 
-	add(id, rectangle);
+	if (backImageFile.length() > 0)
+	{
+		card->setFlippedImagePath(backImageFile);
+		cout << "Back image = " << backImageFile << endl;
+	}
+
+	add(id, card);
 }
 
-void Scene::addCards(std::vector<std::string> filenames)
+void Scene::addCards(vector<string> filenames)
 {
 	int x = 50;
 	int y = 50;
 	int id = 0;
+
 	for (auto i = filenames.begin(); i < filenames.end(); ++i)
 	{
-		std::string path = "c:/programming/FlashBangProject/resources/" + *i;
-		addImageCard(id, path, x, y);
+		string path = "c:/programming/FlashBangProject/resources/" + *i;
+		addImageCard(id, x, y, path, "");
 		++id;
 		x += 10;
 		y += 10;
 	}
 }
 
-void Scene::addCardsFromDirectory(std::string basepath)
+void Scene::addCardsFromDirectory(string basepath)
 {
 	int x = 50;
 	int y = 50;
 	int id = 0;
 
-	//std::string basepath = "c:/programming/FlashBangProject/resources/";
+	vector<string> imageFrontNames;
+	vector<string> imageBackNames;
+
 	for (const auto &entry : fs::directory_iterator(basepath))
 	{
-		std::string path{ entry.path().u8string() };
-		if (path.find(".png", 0))
+		string path{ entry.path().u8string() };
+		int pos = path.find(".png", 0);
+		if (pos > 1)
 		{
-			addImageCard(id, path, x, y);
-			++id;
-			x += 1;
-			y += 1;
+			auto substring = path.substr(0, path.length() - 4);
+			int posBack = substring.find("-back", 0);
+			if (posBack > 0)
+				imageBackNames.push_back(substring);
+			else
+				imageFrontNames.push_back(substring);
 		}
+	}
+
+	map<string, string> frontBackMap;
+
+	for (const auto &front : imageFrontNames)
+	{
+		for (const auto &back : imageBackNames)
+		{
+			if (front == back.substr(0, front.length()))
+				frontBackMap.insert(pair<string, string>(front, back));
+		}
+	}
+
+	for (const auto &name : imageFrontNames)
+	{
+		bool hasBack = frontBackMap.count(name) > 0;
+		string backPath;
+		if (hasBack)
+		{
+			backPath = frontBackMap[name] + ".png";
+			cout << "backPath: " << backPath << endl;
+		}
+		addImageCard(id, x, y, name + ".png", backPath);
+		++id;
+		x += 1;
+		y += 1;
 	}
 }

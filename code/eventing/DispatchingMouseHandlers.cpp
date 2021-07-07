@@ -38,7 +38,17 @@ void DispatchingMouseHandlers::mouse_button_callback(GLFWwindow* window, int but
 	{
 		translator->translateMouseEvent(EventTranslator::EventType::LeftMouseUp);
 	}
-
+	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+	{
+		if (translator)
+		{
+			translator->translateMouseEvent(EventTranslator::EventType::RightMouseDown);
+		}
+	}
+	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+	{
+		translator->translateMouseEvent(EventTranslator::EventType::RightMouseUp);
+	}
 }
 void DispatchingMouseHandlers::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {

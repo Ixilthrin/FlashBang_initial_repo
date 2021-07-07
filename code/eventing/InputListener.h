@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Scene.h"
-#include "Rectangle.h"
+#include "Card.h"
 
 class InputListener
 {
@@ -34,6 +34,7 @@ public:
 	void select(int x, int y);
 	void moveSelection(int x, int y);
 	void endSelect(int x, int y);
+	void flip(int x, int y);
 
 	bool isSelectAndMoveInProgress();
 	int getMouseX();

@@ -24,7 +24,7 @@ using std::vector;
 #include <GLFW/glfw3.h>
 
 #include "Scene.h"
-#include "Rectangle.h"
+#include "Card.h"
 #include "Converter.h"
 
 #include "ImageReader.h"
@@ -182,34 +182,67 @@ int BasicCardDeck::Draw()
 
 	GLint loc = glGetUniformLocation(programHandle, "Translation");
 
-
-	GLuint *textureNames = new GLuint[scene.size()];
-	glCreateTextures(GL_TEXTURE_2D, scene.size(), textureNames);
+	cout << "scene size: " << scene.size() << "     sides: " << scene.numberOfCardSides() << endl;
+	
+	int numberOfTexturesNeeded = scene.numberOfCardSides();
+	GLuint *textureNames = new GLuint[numberOfTexturesNeeded];
+	glCreateTextures(GL_TEXTURE_2D, numberOfTexturesNeeded, textureNames);
 
 	map<int, GLuint> textures;
-	auto ids = scene.getIds();
-	int currentTexture = 0;
-	for (auto id = ids.begin(); id < ids.end(); id++) 
-	{
-		cout << "drawing id: " << *id << endl;
-		textures.insert(pair<int, GLuint>(*id, textureNames[currentTexture]));
+	map<int, GLuint> flippedTextures;
+	int textureNameIndex = 0;
 
-		ImageReader reader(scene.get(*id)->getImagePath());
+	auto ids = scene.getIds();
+
+	for (auto const &id : ids) 
+	{
+		cout << "texture name: " << textureNames[textureNameIndex] << endl;
+		textures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
+
+		ImageReader reader(scene.get(id)->getImagePath());
 
 		GLubyte* image = reader.getImageData();
-		cout << "4: " << (int)image[4] << endl;
 		int imageWidth = reader.getWidth();
 		int imageHeight = reader.getHeight();
 		cout << "width: " << imageWidth << "   height: " << imageHeight << "   comp:  " << reader.getComponentCount() << endl;
 
-		glTextureStorage2D(textureNames[currentTexture], 1, GL_RGBA8, imageWidth, imageHeight);
-		glBindTexture(GL_TEXTURE_2D, textureNames[currentTexture]);
+		glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
+		glBindTexture(GL_TEXTURE_2D, textureNames[textureNameIndex]);
 
 		if (image == nullptr)
 			throw(string("Failed to load image"));
-		glTextureSubImage2D(textureNames[currentTexture], 0, 0, 0, imageWidth, imageHeight, GL_RGBA, GL_UNSIGNED_BYTE, image);
+		glTextureSubImage2D(textureNames[textureNameIndex], 0, 0, 0, imageWidth, imageHeight, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
-		++currentTexture;
+		++textureNameIndex;
+	}
+
+	for (auto const &id : ids)
+	{
+		if (!scene.get(id)->hasFlipSide())
+		{
+			continue;
+		}
+
+		cout << "texture name: " << textureNames[textureNameIndex] << endl;
+		flippedTextures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
+		cout << "mapping flip side to " << textureNames[textureNameIndex] << " at index " << textureNameIndex << endl;
+
+		ImageReader reader(scene.get(id)->getFlippedImagePath());
+		cout << "flipped image path: " << scene.get(id)->getFlippedImagePath() << endl;
+
+		GLubyte* image = reader.getImageData();
+		int imageWidth = reader.getWidth();
+		int imageHeight = reader.getHeight();
+		cout << "width: " << imageWidth << "   height: " << imageHeight << "   comp:  " << reader.getComponentCount() << endl;
+
+		glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
+		glBindTexture(GL_TEXTURE_2D, textureNames[textureNameIndex]);
+
+		if (image == nullptr)
+			throw(string("Failed to load image"));
+		glTextureSubImage2D(textureNames[textureNameIndex], 0, 0, 0, imageWidth, imageHeight, GL_RGBA, GL_UNSIGNED_BYTE, image);
+
+		++textureNameIndex;
 	}
 
 	EventTranslator translator;
@@ -231,7 +264,7 @@ int BasicCardDeck::Draw()
 	glClearColor(.6, .6, .6, 1);
 	glPointSize(5);
 	glLineWidth(3);
-	//glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -241,27 +274,35 @@ int BasicCardDeck::Draw()
 		{
 			float xTrans, yTrans;
 
-			vector<int> items = scene.getIds();
 			int objectCount = 0;
-			for (auto i = items.begin(); i < items.end(); i++)
+			vector<int> ids = scene.getIds();
+			for (auto const& id : ids)
 			{
-				glBindTextureUnit(0, textures[*i]);
+				auto card = scene.get(id);
+				if (card->hasFlipSide() && card->isFlipped())
+				{
+					glBindTextureUnit(0, flippedTextures[id]);
+				}
+				else
+				{
+					glBindTextureUnit(0, textures[id]);
+				}
+
 				int selected = listener.getSelectedId();
-				if (listener.isSelectAndMoveInProgress() && selected == *i)
+				if (listener.isSelectAndMoveInProgress() && selected == id)
 				{
 					xTrans = converter.screenTranslationXToNDC(scene.get(selected)->getTranslationX() + listener.getMovementX());
 					yTrans = converter.screenTranslationYToNDC(scene.get(selected)->getTranslationY() + listener.getMovementY());
 				}
 				else
 				{
-					xTrans = converter.screenTranslationXToNDC(scene.get(*i)->getTranslationX());
-					yTrans = converter.screenTranslationYToNDC(scene.get(*i)->getTranslationY());
+					xTrans = converter.screenTranslationXToNDC(scene.get(id)->getTranslationX());
+					yTrans = converter.screenTranslationYToNDC(scene.get(id)->getTranslationY());
 				}
 
 				vector<int> indexData = scene.get(0)->getIndexData();
 				glUniform2f(loc, xTrans, yTrans);
 				glDrawRangeElements(GL_TRIANGLES, 0, 5, 6, GL_UNSIGNED_INT, indexData.data());
-				//glDrawRangeElements(GL_TRIANGLES, 0, 5, 3, GL_UNSIGNED_INT, indexData.data());
 			}
 
 		}

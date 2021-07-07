@@ -14,7 +14,9 @@ public:
 	enum EventType
 	{
 		LeftMouseDown,
-		LeftMouseUp
+		LeftMouseUp,
+		RightMouseDown,
+		RightMouseUp
 	};
 
 	void registerListener(InputListener *listener);

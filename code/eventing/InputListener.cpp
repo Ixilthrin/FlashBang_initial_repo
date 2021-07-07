@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+using std::vector;
 
 InputListener::InputListener()
 {
@@ -15,11 +16,11 @@ InputListener::InputListener()
 
 void InputListener::select(int x, int y)
 {
-	std::vector<int> ids = _scene->getIds();
-	for (auto i = ids.begin(); i < ids.end(); i++)
+	vector<int> ids = _scene->getIds();
+	for (auto const &id : ids)
 	{
-		Rectangle *rect = _scene->get(*i);
-		if (rect && rect->contains(x, y))
+		Card *card = _scene->get(id);
+		if (card && card->contains(x, y))
 		{
 			if (!_selectAndMoveInProgress)
 			{
@@ -28,8 +29,8 @@ void InputListener::select(int x, int y)
 				_mouseX = x;
 				_mouseY = y;
 			}
-			_selectedId = *i;
-			_scene->bringToTop(*i);
+			_selectedId = id;
+			_scene->bringToTop(id);
 			_selectAndMoveInProgress = true;
 		}
 	}
@@ -37,13 +38,13 @@ void InputListener::select(int x, int y)
 
 void InputListener::moveSelection(int x, int y)
 {
-	Rectangle *rect = _scene->get(_selectedId);
+	Card *card = _scene->get(_selectedId);
 	if (_selectAndMoveInProgress)
 	{
 		_mouseX = x;
 		_mouseY = y;
 	}
-	else if (rect && rect->contains(x, y))
+	else if (card && card->contains(x, y))
 	{
 		//std::cout << "Mouse Over" << std::endl;
 	}
@@ -51,11 +52,11 @@ void InputListener::moveSelection(int x, int y)
 
 void InputListener::endSelect(int x, int y)
 {
-	Rectangle *rect = _scene->get(_selectedId);
-	if (_selectAndMoveInProgress && rect)
+	Card *card = _scene->get(_selectedId);
+	if (_selectAndMoveInProgress && card)
 	{
-		rect->setTranslationX(rect->getTranslationX() + _mouseX - _selectionStartX);
-		rect->setTranslationY(rect->getTranslationY() + _mouseY - _selectionStartY);
+		card->setTranslationX(card->getTranslationX() + _mouseX - _selectionStartX);
+		card->setTranslationY(card->getTranslationY() + _mouseY - _selectionStartY);
 		_mouseX = 0;
 		_mouseY = 0;
 		_selectionStartX = 0;
@@ -63,6 +64,20 @@ void InputListener::endSelect(int x, int y)
 	}
 	_selectAndMoveInProgress = false;
 	_selectedId = -1;
+}
+
+void InputListener::flip(int x, int y)
+{
+	auto ids = _scene->getIds();
+	for (auto const &id : ids)
+	{
+		Card *card = _scene->get(id);
+		if (card && card->contains(x, y))
+		{
+			card->flip();
+			_scene->bringToTop(id);
+		}
+	}
 }
 
 bool InputListener::isSelectAndMoveInProgress()

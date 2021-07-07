@@ -18,7 +18,7 @@ using std::stringstream;
 #include <GLFW/glfw3.h>
 
 #include "ShaderSource.h"
-#include "Rectangle.h"
+#include "Card.h"
 #include "Converter.h"
 
 #include "ImageReader.h"
@@ -110,16 +110,16 @@ int BasicMouseSelection::Draw()
 
 	GLuint vaoHandle;
 
-	Rectangle rectangle{ 200, 100, 20, 50 };
+	Card card{ 200, 100, 20, 50 };
 	Scene scene;
-	scene.add(0, &rectangle);
+	scene.add(0, &card);
 
 	Converter converter{ width, height };
 
 	float x1 = converter.screenXToNDC(0);
 	float y1 = converter.screenYToNDC(0);
-	float x2 = converter.screenXToNDC(rectangle.getWidth());
-	float y2 = converter.screenYToNDC(rectangle.getHeight());
+	float x2 = converter.screenXToNDC(card.getWidth());
+	float y2 = converter.screenYToNDC(card.getHeight());
 
 	float positionData[] =
 	{
@@ -255,13 +255,13 @@ int BasicMouseSelection::Draw()
 			float xTrans, yTrans;
 			if (listener.isSelectAndMoveInProgress())
 			{
-				xTrans = converter.screenTranslationXToNDC(rectangle.getTranslationX() + listener.getMovementX());
-				yTrans = converter.screenTranslationYToNDC(rectangle.getTranslationY() + listener.getMovementY());
+				xTrans = converter.screenTranslationXToNDC(card.getTranslationX() + listener.getMovementX());
+				yTrans = converter.screenTranslationYToNDC(card.getTranslationY() + listener.getMovementY());
 			}
 			else
 			{
-				xTrans = converter.screenTranslationXToNDC(rectangle.getTranslationX());
-				yTrans = converter.screenTranslationYToNDC(rectangle.getTranslationY());
+				xTrans = converter.screenTranslationXToNDC(card.getTranslationX());
+				yTrans = converter.screenTranslationYToNDC(card.getTranslationY());
 			}
 			glUniform2f(loc, xTrans, yTrans);
 		} 
