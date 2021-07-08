@@ -17,9 +17,10 @@ InputListener::InputListener()
 void InputListener::select(int x, int y)
 {
 	vector<int> ids = _scene->getIds();
-	for (auto const &id : ids)
+	auto it = ids.rbegin();
+	while (it != ids.rend())
 	{
-		Card *card = _scene->get(id);
+		Card *card = _scene->get(*it);
 		if (card && card->contains(x, y))
 		{
 			if (!_selectAndMoveInProgress)
@@ -29,10 +30,12 @@ void InputListener::select(int x, int y)
 				_mouseX = x;
 				_mouseY = y;
 			}
-			_selectedId = id;
-			_scene->bringToTop(id);
+			_selectedId = *it;
+			_scene->bringToTop(*it);
 			_selectAndMoveInProgress = true;
+			break;
 		}
+		it++;
 	}
 }
 
@@ -69,14 +72,17 @@ void InputListener::endSelect(int x, int y)
 void InputListener::flip(int x, int y)
 {
 	auto ids = _scene->getIds();
-	for (auto const &id : ids)
+	auto it = ids.rbegin();
+	while (it != ids.rend())
 	{
-		Card *card = _scene->get(id);
+		Card *card = _scene->get(*it);
 		if (card && card->contains(x, y))
 		{
 			card->flip();
-			_scene->bringToTop(id);
+			_scene->bringToTop(*it);
+			break;
 		}
+		it++;
 	}
 }
 
