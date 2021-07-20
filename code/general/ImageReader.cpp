@@ -37,15 +37,27 @@ GLubyte* ImageReader::getImageData()
 
 int ImageReader::getWidth()
 {
+	if (!_dataWasLoaded)
+	{
+		LoadData();
+	}
 	return _width;
 }
 
 int ImageReader::getHeight()
 {
+	if (!_dataWasLoaded)
+	{
+		LoadData();
+	}
 	return _height;
 }
 
 int ImageReader::getComponentCount()
 {
+	if (!_dataWasLoaded)
+	{
+		LoadData();
+	}
 	return _componentCount;
 }

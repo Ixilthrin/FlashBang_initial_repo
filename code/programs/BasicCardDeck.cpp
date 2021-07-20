@@ -28,7 +28,6 @@ using std::vector;
 #include "CardGeometry.h"
 #include "Converter.h"
 
-#include "ImageReader.h"
 #include "ShaderProgramFactory.h"
 
 
@@ -49,7 +48,7 @@ int BasicCardDeck::Draw()
 
 	int width = 1600;
 	int height = 900;
-	window = glfwCreateWindow(width, height, "Select and Move Multiple Objects Prototype", NULL, NULL);
+	window = glfwCreateWindow(width, height, "Simulated Card Deck Prototype", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -167,12 +166,11 @@ int BasicCardDeck::Draw()
 		cout << "texture name: " << textureNames[textureNameIndex] << endl;
 		textures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
 
-		ImageReader reader(scene.get(id)->getImagePath());
-
-		GLubyte* image = reader.getImageData();
-		int imageWidth = reader.getWidth();
-		int imageHeight = reader.getHeight();
-		cout << "width: " << imageWidth << "   height: " << imageHeight << "   comp:  " << reader.getComponentCount() << endl;
+		auto imageReader = scene.getImageData(id)->getImageReader();
+		GLubyte* image = imageReader->getImageData();
+		int imageWidth = imageReader->getWidth();
+		int imageHeight = imageReader->getHeight();
+		cout << "width: " << imageWidth << "   height: " << imageHeight << "   comp:  " << imageReader->getComponentCount() << endl;
 
 		glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
 		glBindTexture(GL_TEXTURE_2D, textureNames[textureNameIndex]);
@@ -195,13 +193,13 @@ int BasicCardDeck::Draw()
 		flippedTextures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
 		cout << "mapping flip side to " << textureNames[textureNameIndex] << " at index " << textureNameIndex << endl;
 
-		ImageReader reader(scene.get(id)->getFlippedImagePath());
+		auto reader = scene.getImageData(id)->getBackImageReader();
 		cout << "flipped image path: " << scene.get(id)->getFlippedImagePath() << endl;
 
-		GLubyte* image = reader.getImageData();
-		int imageWidth = reader.getWidth();
-		int imageHeight = reader.getHeight();
-		cout << "width: " << imageWidth << "   height: " << imageHeight << "   comp:  " << reader.getComponentCount() << endl;
+		GLubyte* image = reader->getImageData();
+		int imageWidth = reader->getWidth();
+		int imageHeight = reader->getHeight();
+		cout << "width: " << imageWidth << "   height: " << imageHeight << "   comp:  " << reader->getComponentCount() << endl;
 
 		glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
 		glBindTexture(GL_TEXTURE_2D, textureNames[textureNameIndex]);

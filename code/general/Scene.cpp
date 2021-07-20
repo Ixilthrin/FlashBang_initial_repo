@@ -18,6 +18,11 @@ void Scene::addGeometry(int id, CardGeometry *geometry)
 	_geometry.insert(pair<int, CardGeometry*>(id, geometry));
 }
 
+void Scene::addImageData(int id, CardImageData *data)
+{
+	_imageData.insert(pair<int, CardImageData*>(id, data));
+}
+
 int Scene::size()
 {
 	return _cards.size();
@@ -51,6 +56,11 @@ CardGeometry* Scene::getGeometry(int id)
 	return _geometry[id];
 }
 
+CardImageData* Scene::getImageData(int id)
+{
+	return _imageData[id];
+}
+
 void Scene::bringToTop(int id)
 {
 	auto position = std::find(_ids.begin(), _ids.end(), id);
@@ -78,6 +88,10 @@ void Scene::addImageCard(int id, int x, int y,
 	}
 
 	add(id, card);
+
+	CardImageData *imageData = new CardImageData(imageFile);
+	imageData->setBackPath(backImageFile);
+	addImageData(id, imageData);
 }
 
 void Scene::addCards(vector<string> filenames)
