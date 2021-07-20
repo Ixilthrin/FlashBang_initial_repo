@@ -104,28 +104,81 @@ int BasicCardDeck::Draw()
 	InputListener listener;
 	listener.setScene(&scene);
 
-	Card *card = scene.get(0);
-	auto positions = scene.getGeometry(0)->getPositions();
-	auto colors = scene.getGeometry(0)->getColors();
-	auto texCoords = scene.getGeometry(0)->getTexCoords();
+	int positionLength = 0;
+	int colorLength = 0;
+	int texCoordLength = 0; 
+	
+	for (auto const& id : scene.getIds())
+	{
+		positionLength += scene.getGeometry(id)->getPositions().size();
+		colorLength += scene.getGeometry(id)->getColors().size();
+		texCoordLength += scene.getGeometry(id)->getTexCoords().size();
+	}
 
-	int positionLength = positions.size();
-	int colorDataLength = colors.size();
-	int texCoordLength = texCoords.size();
-
-	GLuint vboHandles[3];
-	glGenBuffers(3, vboHandles);
+	GLuint vboHandles[4];
+	glGenBuffers(4, vboHandles);
 
 	GLuint positionBufferHandle = vboHandles[0];
 	GLuint colorBufferHandle = vboHandles[1];
 	GLuint texCoordsBufferHandle = vboHandles[2];
+	GLuint indexCoordsBufferHandle = vboHandles[3];
 
-	glNamedBufferData(positionBufferHandle, positionLength * sizeof(float), positions.data(), GL_STATIC_DRAW);
+	glNamedBufferData(positionBufferHandle, positionLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
-	glNamedBufferData(colorBufferHandle, colorDataLength * sizeof(float), colors.data(), GL_STATIC_DRAW);
+	glNamedBufferData(colorBufferHandle, colorLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
-	glNamedBufferData(texCoordsBufferHandle, texCoordLength * sizeof(float), texCoords.data(), GL_STATIC_DRAW);
+	glNamedBufferData(texCoordsBufferHandle, texCoordLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
+	int positionsOffset = 0;
+	int colorsOffset = 0;
+	int texCoordsOffset = 0;
+
+	for (auto const& id : scene.getIds())
+	{
+		auto geometry = scene.getGeometry(id);
+
+		auto positions = geometry->getPositions();
+		auto positionsSize = positions.size() * sizeof(float);
+		glNamedBufferSubData(positionBufferHandle, positionsOffset, positionsSize, positions.data());
+		positionsOffset += positionsSize;
+
+		auto colors = geometry->getColors();
+		auto colorsSize = colors.size() * sizeof(float);
+		glNamedBufferSubData(colorBufferHandle, colorsOffset, colorsSize, colors.data());
+		colorsOffset += colorsSize;
+
+		auto texCoords = geometry->getTexCoords();
+		auto texCoordsSize = texCoords.size() * sizeof(float);
+		glNamedBufferSubData(texCoordsBufferHandle, texCoordsOffset, texCoordsSize, texCoords.data());
+		texCoordsOffset += texCoordsSize;
+	}
+	
+	vector<unsigned int> indexData;
+
+	unsigned int baseIndex = 0;
+
+	map<int, int> indexOffsets;
+	int currentIndexOffset = 0;
+	for (auto const &id : scene.getIds())
+	{
+		auto geom = scene.getGeometry(id);
+		auto currentIndices = geom->getIndexData();
+		indexOffsets.insert(pair<int, int>(id, currentIndexOffset));
+		currentIndexOffset += currentIndices.size();
+		for (auto const &value : currentIndices)
+		{
+			auto index = value + baseIndex;
+			indexData.push_back(index);
+		}
+		baseIndex += geom->getPositions().size() / 3;
+	}
+
+	// I don't know why the following 2 lines did not work, but instead of
+	// binding an index buffer I just use the array of index values.
+
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexCoordsBufferHandle);
+	//glBufferData(indexCoordsBufferHandle, indexData.size() * sizeof(unsigned int), indexData.data(), GL_STATIC_DRAW);
+	
 	GLuint vaoHandle;
 	glGenVertexArrays(1, &vaoHandle);
 	glBindVertexArray(vaoHandle);
@@ -148,8 +201,6 @@ int BasicCardDeck::Draw()
 	glVertexAttribBinding(2, 2);
 
 	GLint loc = glGetUniformLocation(programHandle, "Translation");
-
-	cout << "scene size: " << scene.size() << "     sides: " << scene.numberOfCardSides() << endl;
 	
 	int numberOfTexturesNeeded = scene.numberOfCardSides();
 	GLuint *textureNames = new GLuint[numberOfTexturesNeeded];
@@ -163,14 +214,12 @@ int BasicCardDeck::Draw()
 
 	for (auto const &id : ids) 
 	{
-		cout << "texture name: " << textureNames[textureNameIndex] << endl;
 		textures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
 
 		auto imageReader = scene.getImageData(id)->getImageReader();
 		GLubyte* image = imageReader->getImageData();
 		int imageWidth = imageReader->getWidth();
 		int imageHeight = imageReader->getHeight();
-		cout << "width: " << imageWidth << "   height: " << imageHeight << "   comp:  " << imageReader->getComponentCount() << endl;
 
 		glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
 		glBindTexture(GL_TEXTURE_2D, textureNames[textureNameIndex]);
@@ -189,17 +238,13 @@ int BasicCardDeck::Draw()
 			continue;
 		}
 
-		cout << "texture name: " << textureNames[textureNameIndex] << endl;
 		flippedTextures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
-		cout << "mapping flip side to " << textureNames[textureNameIndex] << " at index " << textureNameIndex << endl;
 
 		auto reader = scene.getImageData(id)->getBackImageReader();
-		cout << "flipped image path: " << scene.get(id)->getFlippedImagePath() << endl;
 
 		GLubyte* image = reader->getImageData();
 		int imageWidth = reader->getWidth();
 		int imageHeight = reader->getHeight();
-		cout << "width: " << imageWidth << "   height: " << imageHeight << "   comp:  " << reader->getComponentCount() << endl;
 
 		glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
 		glBindTexture(GL_TEXTURE_2D, textureNames[textureNameIndex]);
@@ -231,6 +276,8 @@ int BasicCardDeck::Draw()
 	glPointSize(5);
 	glLineWidth(3);
 	glDisable(GL_DEPTH_TEST);
+	
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -266,9 +313,8 @@ int BasicCardDeck::Draw()
 					yTrans = converter.screenTranslationYToNDC(scene.get(id)->getTranslationY());
 				}
 				
-				vector<int> indexData = scene.getGeometry(0)->getIndexData();
 				glUniform2f(loc, xTrans, yTrans);
-				glDrawRangeElements(GL_TRIANGLES, 0, 5, 6, GL_UNSIGNED_INT, indexData.data());
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &(indexData.data())[indexOffsets[id]]);
 			}
 
 		}

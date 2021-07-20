@@ -76,7 +76,19 @@ void Scene::bringToTop(int id)
 void Scene::addImageCard(int id, int x, int y,
 	string imageFile, string backImageFile)
 {
-	Card *card = new Card{ 128, 128, x, y, imageFile,
+	CardImageData *imageData = new CardImageData(imageFile);
+	imageData->setBackPath(backImageFile);
+
+	int width = imageData->getImageReader()->getWidth();
+	int height = imageData->getImageReader()->getHeight();
+
+	if (width > 500)
+	{
+		height = height / (width / 500);
+		width = 500;
+	}
+
+	Card *card = new Card{ width, height, x, y, imageFile,
 		"c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl",
 		"c:/programming/FlashBang/shaders/texture.frag.glsl"
 	};
@@ -89,8 +101,6 @@ void Scene::addImageCard(int id, int x, int y,
 
 	add(id, card);
 
-	CardImageData *imageData = new CardImageData(imageFile);
-	imageData->setBackPath(backImageFile);
 	addImageData(id, imageData);
 }
 
@@ -152,7 +162,6 @@ void Scene::addCardsFromDirectory(string basepath)
 		if (hasBack)
 		{
 			backPath = frontBackMap[name] + ".png";
-			cout << "backPath: " << backPath << endl;
 		}
 		addImageCard(id, x, y, name + ".png", backPath);
 		++id;

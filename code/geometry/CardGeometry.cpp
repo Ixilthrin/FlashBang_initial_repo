@@ -62,9 +62,9 @@ vector<float> CardGeometry::getTexCoords()
 	return texCoords;
 }
 
-vector<int> CardGeometry::getIndexData()
+vector<unsigned int> CardGeometry::getIndexData()
 {
-	std::vector<int> indexData
+	std::vector<unsigned int> indexData
 	{
 		0, 1, 2,
 		2, 3, 0

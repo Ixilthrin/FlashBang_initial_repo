@@ -17,5 +17,5 @@ public:
 	vector<float> getPositions();
 	vector<float> getColors();
 	vector<float> getTexCoords();
-	vector<int> getIndexData();
+	vector<unsigned int> getIndexData();
 };

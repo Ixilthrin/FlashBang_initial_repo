@@ -77,7 +77,6 @@ bool Card::hasFlipSide()
 void Card::flip()
 {
 	_isFlipped = !_isFlipped;
-	cout << "setting _isflipped" << _isFlipped << endl;
 }
 
 bool Card::isFlipped()
