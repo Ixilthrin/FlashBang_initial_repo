@@ -121,15 +121,11 @@ int BasicCardDeck::Draw()
 	GLuint colorBufferHandle = vboHandles[1];
 	GLuint texCoordsBufferHandle = vboHandles[2];
 
-	glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, positionLength * sizeof(float), positions.data(), GL_STATIC_DRAW);
+	glNamedBufferData(positionBufferHandle, positionLength * sizeof(float), positions.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, colorBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, colorDataLength * sizeof(float), colors.data(), GL_STATIC_DRAW);
+	glNamedBufferData(colorBufferHandle, colorDataLength * sizeof(float), colors.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, texCoordsBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, texCoordLength * sizeof(float), texCoords.data(), GL_STATIC_DRAW);
-
+	glNamedBufferData(texCoordsBufferHandle, texCoordLength * sizeof(float), texCoords.data(), GL_STATIC_DRAW);
 
 	GLuint vaoHandle;
 	glGenVertexArrays(1, &vaoHandle);
