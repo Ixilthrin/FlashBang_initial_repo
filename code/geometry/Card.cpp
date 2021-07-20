@@ -98,16 +98,6 @@ bool Card::contains(int x, int y)
 	return false;
 }
 
-std::vector<int> Card::getIndexData()
-{
-	std::vector<int> indexData
-	{
-		0, 1, 2,
-		2, 3, 0
-	};
-	return indexData;
-}
-
 std::string Card::getVertShaderPath()
 {
 	return _vertShaderPath;

@@ -25,6 +25,7 @@ using std::vector;
 
 #include "Scene.h"
 #include "Card.h"
+#include "CardGeometry.h"
 #include "Converter.h"
 
 #include "ImageReader.h"
@@ -76,6 +77,14 @@ int BasicCardDeck::Draw()
 
 	scene.addCardsFromDirectory(basedir);
 
+	Converter converter{ width, height };
+
+	for (auto const& id : scene.getIds())
+	{
+		auto geometry = new CardGeometry(scene.get(id), &converter);
+		scene.addGeometry(id, geometry);
+	}
+
 	GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
 	if (vertShader == 0)
 		return -4;
@@ -96,51 +105,14 @@ int BasicCardDeck::Draw()
 	InputListener listener;
 	listener.setScene(&scene);
 
-	Converter converter{ width, height };
+	Card *card = scene.get(0);
+	auto positions = scene.getGeometry(0)->getPositions();
+	auto colors = scene.getGeometry(0)->getColors();
+	auto texCoords = scene.getGeometry(0)->getTexCoords();
 
-	float x1 = converter.screenXToNDC(0);
-	float y1 = converter.screenYToNDC(0);
-	float x2 = converter.screenXToNDC(scene.get(0)->getWidth());
-	float y2 = converter.screenYToNDC(scene.get(0)->getHeight());
-
-	float positionData[] =
-	{
-		x1,
-		y1,
-		0.0f,
-
-		x1,
-		y2,
-		0.0f,
-
-		x2,
-		y2,
-		0.0f,
-
-		x2,
-		y1,
-		0.0f
-	};
-
-	float colorData[] =
-	{
-		.82f, 0.41f, 0.14f,
-		.82f, 0.41f, 0.14f,
-		1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f
-	};
-
-	float texCoords[] =
-	{
-		0.0f, 0.0f,
-		0.0f, 1.0f,
-		1.0f, 1.0f,
-		1.0f, 0.0f
-	};
-
-	int positionLength = sizeof(positionData) / sizeof(positionData[0]);
-	int colorDataLength = sizeof(colorData) / sizeof(colorData[0]);
-	int texCoordLength = sizeof(texCoords) / sizeof(texCoords[0]);
+	int positionLength = positions.size();
+	int colorDataLength = colors.size();
+	int texCoordLength = texCoords.size();
 
 	GLuint vboHandles[3];
 	glGenBuffers(3, vboHandles);
@@ -150,13 +122,13 @@ int BasicCardDeck::Draw()
 	GLuint texCoordsBufferHandle = vboHandles[2];
 
 	glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, positionLength * sizeof(float), positionData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, positionLength * sizeof(float), positions.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, colorBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, colorDataLength * sizeof(float), colorData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, colorDataLength * sizeof(float), colors.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, texCoordsBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, texCoordLength * sizeof(float), texCoords, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, texCoordLength * sizeof(float), texCoords.data(), GL_STATIC_DRAW);
 
 
 	GLuint vaoHandle;
@@ -299,8 +271,8 @@ int BasicCardDeck::Draw()
 					xTrans = converter.screenTranslationXToNDC(scene.get(id)->getTranslationX());
 					yTrans = converter.screenTranslationYToNDC(scene.get(id)->getTranslationY());
 				}
-
-				vector<int> indexData = scene.get(0)->getIndexData();
+				
+				vector<int> indexData = scene.getGeometry(0)->getIndexData();
 				glUniform2f(loc, xTrans, yTrans);
 				glDrawRangeElements(GL_TRIANGLES, 0, 5, 6, GL_UNSIGNED_INT, indexData.data());
 			}

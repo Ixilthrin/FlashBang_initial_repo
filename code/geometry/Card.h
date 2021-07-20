@@ -39,7 +39,6 @@ public:
 	void flip();
 	bool isFlipped();
 	bool contains(int x, int y);
-	std::vector<int> getIndexData();
 	std::string getVertShaderPath();
 	std::string getFragShaderPath();
 };

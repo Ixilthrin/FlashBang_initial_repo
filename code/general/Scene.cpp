@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "CardGeometry.h"
 
 #include "ImageReader.h"
 #include <filesystem>
@@ -10,6 +11,11 @@ void Scene::add(int id, Card *card)
 {
 	_cards.insert(pair<int, Card*>(id, card));
 	_ids.push_back(id);
+}
+
+void Scene::addGeometry(int id, CardGeometry *geometry)
+{
+	_geometry.insert(pair<int, CardGeometry*>(id, geometry));
 }
 
 int Scene::size()
@@ -38,6 +44,11 @@ vector<int> Scene::getIds()
 Card *Scene::get(int id)
 {
 	return _cards[id];
+}
+
+CardGeometry* Scene::getGeometry(int id)
+{
+	return _geometry[id];
 }
 
 void Scene::bringToTop(int id)

@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include "Card.h"
+#include "CardGeometry.h"
 
 using std::endl;
 using std::cout;
@@ -22,12 +23,15 @@ class Scene
 private:
 	vector<int> _ids;
 	map<int, Card*> _cards;
+	map<int, CardGeometry*> _geometry;
 public:
 	void add(int id, Card *card);
+	void addGeometry(int id, CardGeometry *geometry);
 	int size();
 	int numberOfCardSides();
 	vector<int> getIds();
 	Card *get(int id);
+	CardGeometry *getGeometry(int id);
 	void bringToTop(int id);
 	void addImageCard(int id, int x, int y, 
 		string imagePath, string backImagePath);
