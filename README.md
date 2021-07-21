@@ -44,4 +44,11 @@ create a png file with the same name appended with "-back".  For example, if you
 a card called mycard.png, the flip side will be mycard-back.png.  To flip a card
 perform a right-click on it.
 
+The latest enhancements to the card deck program (program #10) is support for variable-
+sized cards (up to a maximum width of 500) and shuffling. So when you save or copy an
+image into the card deck directory the cards will be the size of their images (as 
+mentioned the max width is currently 500.  The height will remain proportional to
+the width.  Also added translucency for pure white (R=1.0, G=1.0, B=1.0).  This works 
+well with paint programs that do not support an alpha channel and default to a pure 
+white background for images.
 
