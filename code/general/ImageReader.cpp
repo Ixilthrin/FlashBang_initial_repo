@@ -5,59 +5,59 @@
 
 ImageReader::ImageReader(std::string filePath)
 {
-	_filePath = filePath;
-	_width = 0;
-	_height = 0;
-	_componentCount = 0;
-	_dataWasLoaded = false;
+    _filePath = filePath;
+    _width = 0;
+    _height = 0;
+    _componentCount = 0;
+    _dataWasLoaded = false;
 }
 
 ImageReader::~ImageReader()
 {
-	if (_dataWasLoaded)
-	{
-		stbi_image_free(_imageData);
-	}
+    if (_dataWasLoaded)
+    {
+        stbi_image_free(_imageData);
+    }
 }
 
 void ImageReader::LoadData()
 {
-	_imageData = stbi_load(_filePath.c_str(), &_width, &_height, &_componentCount, STBI_rgb_alpha);
-	_dataWasLoaded = true;
+    _imageData = stbi_load(_filePath.c_str(), &_width, &_height, &_componentCount, STBI_rgb_alpha);
+    _dataWasLoaded = true;
 }
 
 GLubyte* ImageReader::getImageData()
 {
-	if (!_dataWasLoaded)
-	{
-		LoadData();
-	}
-	return _imageData;
+    if (!_dataWasLoaded)
+    {
+        LoadData();
+    }
+    return _imageData;
 }
 
 int ImageReader::getWidth()
 {
-	if (!_dataWasLoaded)
-	{
-		LoadData();
-	}
-	return _width;
+    if (!_dataWasLoaded)
+    {
+        LoadData();
+    }
+    return _width;
 }
 
 int ImageReader::getHeight()
 {
-	if (!_dataWasLoaded)
-	{
-		LoadData();
-	}
-	return _height;
+    if (!_dataWasLoaded)
+    {
+        LoadData();
+    }
+    return _height;
 }
 
 int ImageReader::getComponentCount()
 {
-	if (!_dataWasLoaded)
-	{
-		LoadData();
-	}
-	return _componentCount;
+    if (!_dataWasLoaded)
+    {
+        LoadData();
+    }
+    return _componentCount;
 }

@@ -6,8 +6,8 @@
 class Polyline
 {
 private:
-	std::vector<XYZ> _points;
+    std::vector<XYZ> _points;
 public:
-	Polyline();
-	std::vector<XYZ> getPoints();
+    Polyline();
+    std::vector<XYZ> getPoints();
 };

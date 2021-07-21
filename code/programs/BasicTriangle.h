@@ -2,8 +2,8 @@
 class BasicTriangle
 {
 public:
-	BasicTriangle();
-	virtual ~BasicTriangle();
-	int Draw();
+    BasicTriangle();
+    virtual ~BasicTriangle();
+    int Draw();
 };
 

@@ -9,13 +9,13 @@ using std::string;
 class GLFWGraphicsWindow
 {
 private:
-	GLFWwindow *_window;
+    GLFWwindow *_window;
 public:
-	GLFWGraphicsWindow();
-	~GLFWGraphicsWindow();
-	int CreateWindow(string title);
-	bool IsOpen();
-	void SwapBuffers();
-	void PollEvents();
+    GLFWGraphicsWindow();
+    ~GLFWGraphicsWindow();
+    int CreateWindow(string title);
+    bool IsOpen();
+    void SwapBuffers();
+    void PollEvents();
 };
 

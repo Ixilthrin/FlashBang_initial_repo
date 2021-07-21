@@ -2,7 +2,7 @@
 
 struct XYZ
 {
-	float x;
-	float y;
-	float z;
+    float x;
+    float y;
+    float z;
 };

@@ -11,13 +11,13 @@ using std::vector;
 class BasicGraphicsLoop
 {
 public:
-	BasicGraphicsLoop();
-	virtual ~BasicGraphicsLoop();
-	void AddModel(IModel *model);
-	int Run(string title);
+    BasicGraphicsLoop();
+    virtual ~BasicGraphicsLoop();
+    void AddModel(IModel *model);
+    int Run(string title);
 
 private:
-	vector<IModel*> _models;
-	GLFWGraphicsWindow _window;
+    vector<IModel*> _models;
+    GLFWGraphicsWindow _window;
 };
 

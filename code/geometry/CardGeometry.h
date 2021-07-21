@@ -10,12 +10,12 @@ using std::vector;
 class CardGeometry
 {
 private:
-	Card *_card;
-	Converter *_converter;
+    Card *_card;
+    Converter *_converter;
 public:
-	CardGeometry(Card *card, Converter *converter);
-	vector<float> getPositions();
-	vector<float> getColors();
-	vector<float> getTexCoords();
-	vector<unsigned int> getIndexData();
+    CardGeometry(Card *card, Converter *converter);
+    vector<float> getPositions();
+    vector<float> getColors();
+    vector<float> getTexCoords();
+    vector<unsigned int> getIndexData();
 };

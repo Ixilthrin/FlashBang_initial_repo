@@ -5,5 +5,5 @@
 class ShaderProgramFactory
 {
 public:
-	static GLuint BuildShaderProgram(std::string vertSource, std::string fragSource);
+    static GLuint BuildShaderProgram(std::string vertSource, std::string fragSource);
 };

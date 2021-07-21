@@ -16,15 +16,15 @@ using std::vector;
 class SampleProjectionModel : public IModel
 {
 public:
-	SampleProjectionModel();
-	virtual ~SampleProjectionModel();
-	virtual int Setup();
-	virtual int Draw();
+    SampleProjectionModel();
+    virtual ~SampleProjectionModel();
+    virtual int Setup();
+    virtual int Draw();
 
 private:
-	GLuint _vaoHandle;
-	ProjectionOnlyShader _shader;
-	SampleGeometry _geometry;
-	time_point<system_clock> _startTime;
+    GLuint _vaoHandle;
+    ProjectionOnlyShader _shader;
+    SampleGeometry _geometry;
+    time_point<system_clock> _startTime;
 };
 

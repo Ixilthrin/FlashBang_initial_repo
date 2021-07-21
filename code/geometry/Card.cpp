@@ -5,104 +5,104 @@ using std::cout;
 using std::endl;
 
 Card::Card(
-	int width, 
-	int height, 
-	int translationX, 
-	int translationY, 
-	std::string imagePath,
-	std::string vertShaderPath,
-	std::string fragShaderPath)
+    int width, 
+    int height, 
+    int translationX, 
+    int translationY, 
+    std::string imagePath,
+    std::string vertShaderPath,
+    std::string fragShaderPath)
 {
-	_width = width;
-	_height = height;
-	_translationX = translationX;
-	_translationY = translationY;
-	_imagePath = imagePath;
-	_flippedImagePath = "";
-	_vertShaderPath = vertShaderPath;
-	_fragShaderPath = fragShaderPath;
-	_isFlipped = false;
+    _width = width;
+    _height = height;
+    _translationX = translationX;
+    _translationY = translationY;
+    _imagePath = imagePath;
+    _flippedImagePath = "";
+    _vertShaderPath = vertShaderPath;
+    _fragShaderPath = fragShaderPath;
+    _isFlipped = false;
 }
 
 void Card::setTranslationX(int translation)
 {
-	_translationX = translation;
+    _translationX = translation;
 }
 
 int Card::getWidth()
 {
-	return _width;
+    return _width;
 }
 
 int Card::getHeight()
 {
-	return _height;
+    return _height;
 }
 
 void Card::setTranslationY(int translation)
 {
-	_translationY = translation;
+    _translationY = translation;
 }
 
 int Card::getTranslationX()
 {
-	return _translationX;
+    return _translationX;
 }
 
 int Card::getTranslationY()
 {
-	return _translationY;
+    return _translationY;
 }
 
 std::string Card::getImagePath()
 {
-	return _imagePath;
+    return _imagePath;
 }
 
 std::string Card::getFlippedImagePath()
 {
-	return _flippedImagePath;
+    return _flippedImagePath;
 }
 
 void Card::setFlippedImagePath(std::string path)
 {
-	_flippedImagePath = path;
+    _flippedImagePath = path;
 }
 
 bool Card::hasFlipSide()
 {
-	return _flippedImagePath.length() > 0;
+    return _flippedImagePath.length() > 0;
 }
 
 void Card::flip()
 {
-	_isFlipped = !_isFlipped;
+    _isFlipped = !_isFlipped;
 }
 
 bool Card::isFlipped()
 {
-	return _isFlipped;
+    return _isFlipped;
 }
 
 bool Card::contains(int x, int y)
 {
-	if (x > _translationX
-		&& y > _translationY
-		&& x < _translationX + _width
-		&& y < _translationY + _height)
-	{
-		return true;
-	}
+    if (x > _translationX
+        && y > _translationY
+        && x < _translationX + _width
+        && y < _translationY + _height)
+    {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 std::string Card::getVertShaderPath()
 {
-	return _vertShaderPath;
+    return _vertShaderPath;
 }
 
 std::string Card::getFragShaderPath()
 {
-	return _fragShaderPath;
+    return _fragShaderPath;
 }

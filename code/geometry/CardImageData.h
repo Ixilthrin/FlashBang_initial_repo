@@ -8,11 +8,11 @@ using std::string;
 class CardImageData
 {
 private:
-	ImageReader *_imageReader;
-	ImageReader *_backImageReader;
+    ImageReader *_imageReader;
+    ImageReader *_backImageReader;
 public:
-	CardImageData(string path);
-	void setBackPath(string path);
-	ImageReader *getImageReader();
-	ImageReader *getBackImageReader();
+    CardImageData(string path);
+    void setBackPath(string path);
+    ImageReader *getImageReader();
+    ImageReader *getBackImageReader();
 };

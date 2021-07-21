@@ -2,8 +2,8 @@
 class BasicTriangleAlternateVBBinding
 {
 public:
-	BasicTriangleAlternateVBBinding();
-	virtual ~BasicTriangleAlternateVBBinding();
-	int Draw();
+    BasicTriangleAlternateVBBinding();
+    virtual ~BasicTriangleAlternateVBBinding();
+    int Draw();
 };
 

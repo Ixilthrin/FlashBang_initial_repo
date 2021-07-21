@@ -2,8 +2,8 @@
 class BasicWithoutLayoutQualifiers
 {
 public:
-	BasicWithoutLayoutQualifiers();
-	virtual ~BasicWithoutLayoutQualifiers();
-	int Draw();
+    BasicWithoutLayoutQualifiers();
+    virtual ~BasicWithoutLayoutQualifiers();
+    int Draw();
 };
 

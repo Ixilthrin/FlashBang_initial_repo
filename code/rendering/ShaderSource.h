@@ -6,8 +6,8 @@ using std::string;
 class ShaderSource
 {
 public:
-	ShaderSource();
-	virtual ~ShaderSource();
-	string ReadShaderFromFile(string path);
+    ShaderSource();
+    virtual ~ShaderSource();
+    string ReadShaderFromFile(string path);
 };
 

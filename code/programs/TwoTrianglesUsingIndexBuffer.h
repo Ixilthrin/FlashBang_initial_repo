@@ -2,8 +2,8 @@
 class TwoTrianglesUsingIndexBuffer
 {
 public:
-	TwoTrianglesUsingIndexBuffer();
-	virtual ~TwoTrianglesUsingIndexBuffer();
-	int Draw();
+    TwoTrianglesUsingIndexBuffer();
+    virtual ~TwoTrianglesUsingIndexBuffer();
+    int Draw();
 };
 

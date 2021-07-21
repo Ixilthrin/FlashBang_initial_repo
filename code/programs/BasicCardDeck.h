@@ -3,8 +3,8 @@
 class BasicCardDeck
 {
 public:
-	BasicCardDeck();
-	virtual ~BasicCardDeck();
-	int Draw();
+    BasicCardDeck();
+    virtual ~BasicCardDeck();
+    int Draw();
 };
 

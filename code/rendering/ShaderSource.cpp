@@ -18,8 +18,8 @@ ShaderSource::~ShaderSource()
 
 string ShaderSource::ReadShaderFromFile(string path)
 {
-	ifstream stream(path);
-	stringstream buffer;
-	buffer << stream.rdbuf();
-	return buffer.str();
+    ifstream stream(path);
+    stringstream buffer;
+    buffer << stream.rdbuf();
+    return buffer.str();
 }

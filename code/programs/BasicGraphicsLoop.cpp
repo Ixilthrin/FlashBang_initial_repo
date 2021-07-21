@@ -26,49 +26,49 @@ BasicGraphicsLoop::~BasicGraphicsLoop()
 
 void BasicGraphicsLoop::AddModel(IModel *model)
 {
-	_models.push_back(model);
+    _models.push_back(model);
 }
 
 int BasicGraphicsLoop::Run(string title)
 {
-	int createWindowResult = _window.CreateWindow(title);
-	if (createWindowResult != 0)
-		return createWindowResult;
+    int createWindowResult = _window.CreateWindow(title);
+    if (createWindowResult != 0)
+        return createWindowResult;
 
-	if (!gladLoadGL())
-		return -3;
+    if (!gladLoadGL())
+        return -3;
 
-	glClearColor(0, 0, 0, 1);
+    glClearColor(0, 0, 0, 1);
 
-	glEnable(GL_MULTISAMPLE);
+    glEnable(GL_MULTISAMPLE);
 
-	for (auto model : _models)
-		model->Setup();
+    for (auto model : _models)
+        model->Setup();
 
-	int frameCount = 0;
-	auto startTime = system_clock::now();
+    int frameCount = 0;
+    auto startTime = system_clock::now();
 
-	while (_window.IsOpen())
-	{
-		frameCount++;
+    while (_window.IsOpen())
+    {
+        frameCount++;
 
-		glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-		for (auto model : _models)
-			model->Draw();
+        for (auto model : _models)
+            model->Draw();
 
-		_window.SwapBuffers();
+        _window.SwapBuffers();
 
-		_window.PollEvents();
-	}
+        _window.PollEvents();
+    }
 
-	duration<double> totalTime = system_clock::now() - startTime;
-	cout << "Total time: " << totalTime.count() << endl;
-	cout << "Total frames: " << frameCount << endl;
-	cout << "Frames/second: " << (double)frameCount / totalTime.count() << endl;
+    duration<double> totalTime = system_clock::now() - startTime;
+    cout << "Total time: " << totalTime.count() << endl;
+    cout << "Total frames: " << frameCount << endl;
+    cout << "Frames/second: " << (double)frameCount / totalTime.count() << endl;
 
-	for (auto model : _models)
-		delete model;
+    for (auto model : _models)
+        delete model;
 
-	return 0;
+    return 0;
 }

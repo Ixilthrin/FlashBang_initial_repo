@@ -33,144 +33,144 @@ using glm::vec4;
 
 extern "C"
 {
-	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
-	__declspec(dllexport) int NvOptimusEnablement = 0x00000001;
+    __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+    __declspec(dllexport) int NvOptimusEnablement = 0x00000001;
 }
 
 int showBasicTriangle()
 {
-	BasicTriangle drawer;
-	return drawer.Draw();
+    BasicTriangle drawer;
+    return drawer.Draw();
 }
 
 int showTriagleUsingAlternateVBBinding()
 {
-	BasicTriangleAlternateVBBinding drawer;
-	return drawer.Draw();
+    BasicTriangleAlternateVBBinding drawer;
+    return drawer.Draw();
 }
 
 int showTriangleWithoutLocationQualifiers()
 {
-	BasicWithoutLayoutQualifiers drawer;
-	return drawer.Draw();
+    BasicWithoutLayoutQualifiers drawer;
+    return drawer.Draw();
 }
 
 int showTwoTrianglesUsingIndexBuffer()
 {
-	TwoTrianglesUsingIndexBuffer drawer;
-	return drawer.Draw();
+    TwoTrianglesUsingIndexBuffer drawer;
+    return drawer.Draw();
 }
 
 int showTriangleWithRotation()
 {
-	TriangleWithRotation drawer;
-	return drawer.Draw();
+    TriangleWithRotation drawer;
+    return drawer.Draw();
 }
 
 int showGenerateGeometryExample()
 {
-	GenerateGeometryExample drawer;
-	return drawer.Draw();
+    GenerateGeometryExample drawer;
+    return drawer.Draw();
 }
 
 int runBasicGraphicsLoop()
 {
-	BasicGraphicsLoop program;
-	SampleModel *sampleModel = new SampleModel();
-	program.AddModel(sampleModel);
-	return program.Run("Basic Graphics Loop");
+    BasicGraphicsLoop program;
+    SampleModel *sampleModel = new SampleModel();
+    program.AddModel(sampleModel);
+    return program.Run("Basic Graphics Loop");
 }
 
 int runBasicProjectionGraphicsLoop()
 {
-	BasicGraphicsLoop program;
-	SampleProjectionModel *sampleModel = new SampleProjectionModel();
-	program.AddModel(sampleModel);
-	return program.Run("Basic Graphics Loop Using Projection Model");
+    BasicGraphicsLoop program;
+    SampleProjectionModel *sampleModel = new SampleProjectionModel();
+    program.AddModel(sampleModel);
+    return program.Run("Basic Graphics Loop Using Projection Model");
 }
 
 int runBasicMouseSelection()
 {
-	BasicMouseSelection drawer;
-	return drawer.Draw();
+    BasicMouseSelection drawer;
+    return drawer.Draw();
 }
 
 int runBasicCardDeck()
 {
-	BasicCardDeck drawer;
-	return drawer.Draw();
+    BasicCardDeck drawer;
+    return drawer.Draw();
 }
 
 void showVersionInfo(int result)
 {
-	cout << "Hello World from console" << endl;
+    cout << "Hello World from console" << endl;
 
-	cout << "Result from setup = " << result << endl;
+    cout << "Result from setup = " << result << endl;
 
-	const GLubyte *renderer = glGetString(GL_RENDERER);
-	printf("Renderer: %s\n", renderer);
+    const GLubyte *renderer = glGetString(GL_RENDERER);
+    printf("Renderer: %s\n", renderer);
 
-	const GLubyte *vender = glGetString(GL_VENDOR);
-	printf("Vender: %s\n", vender);
+    const GLubyte *vender = glGetString(GL_VENDOR);
+    printf("Vender: %s\n", vender);
 
-	const GLubyte *version = glGetString(GL_VERSION);
-	printf("Version: %s\n", version);
+    const GLubyte *version = glGetString(GL_VERSION);
+    printf("Version: %s\n", version);
 
-	const GLubyte *glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
-	printf("Shading language version: %s", glslVersion);
+    const GLubyte *glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    printf("Shading language version: %s", glslVersion);
 
 
-	vec4 position = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    vec4 position = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
-	glfwTerminate();
+    glfwTerminate();
 
-	int x;
-	cin >> x;
+    int x;
+    cin >> x;
 }
 
 int main(int argc, char* argv[])
 {
-	bool showInfo = false;
-	int programNumber = 10;
-	int result = 0;
-	printf("Program Number %d\n", programNumber);
-	switch (programNumber)
-	{
-	case 1:
-		result = showBasicTriangle();
-		break;
-	case 2:
-		result = showTriagleUsingAlternateVBBinding();
-		break;
-	case 3:
-		result = showTriangleWithoutLocationQualifiers();
-		break;
-	case 4:
-		result = showTwoTrianglesUsingIndexBuffer();
-		break;
-	case 5:
-		result = showTriangleWithRotation();
-		break;
-	case 6:
-		result = showGenerateGeometryExample();
-		break;
-	case 7:
-		result = runBasicGraphicsLoop();
-		break;
-	case 8:
-		result = runBasicProjectionGraphicsLoop();
-		break;
-	case 9:
-		result = runBasicMouseSelection();
-		break;
-	case 10:
-		result = runBasicCardDeck();
-		break;
-	}
+    bool showInfo = false;
+    int programNumber = 10;
+    int result = 0;
+    printf("Program Number %d\n", programNumber);
+    switch (programNumber)
+    {
+    case 1:
+        result = showBasicTriangle();
+        break;
+    case 2:
+        result = showTriagleUsingAlternateVBBinding();
+        break;
+    case 3:
+        result = showTriangleWithoutLocationQualifiers();
+        break;
+    case 4:
+        result = showTwoTrianglesUsingIndexBuffer();
+        break;
+    case 5:
+        result = showTriangleWithRotation();
+        break;
+    case 6:
+        result = showGenerateGeometryExample();
+        break;
+    case 7:
+        result = runBasicGraphicsLoop();
+        break;
+    case 8:
+        result = runBasicProjectionGraphicsLoop();
+        break;
+    case 9:
+        result = runBasicMouseSelection();
+        break;
+    case 10:
+        result = runBasicCardDeck();
+        break;
+    }
 
-	if (showInfo)
-		showVersionInfo(result);
+    if (showInfo)
+        showVersionInfo(result);
 
-	return result;
+    return result;
 }
 

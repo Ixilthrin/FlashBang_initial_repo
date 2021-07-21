@@ -16,15 +16,15 @@ using std::vector;
 class SampleModel : public IModel
 {
 public:
-	SampleModel();
-	virtual ~SampleModel();
-	virtual int Setup();
-	virtual int Draw();
+    SampleModel();
+    virtual ~SampleModel();
+    virtual int Setup();
+    virtual int Draw();
 
 private:
-	GLuint _vaoHandle;
-	RotationShaderNoProjection _shader;
-	SampleGeometry _geometry;
-	time_point<system_clock> _startTime;
+    GLuint _vaoHandle;
+    RotationShaderNoProjection _shader;
+    SampleGeometry _geometry;
+    time_point<system_clock> _startTime;
 };
 

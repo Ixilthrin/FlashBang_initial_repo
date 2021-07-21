@@ -6,5 +6,5 @@ Polyline::Polyline()
 
 std::vector<XYZ> Polyline::getPoints()
 {
-	return _points;
+    return _points;
 }

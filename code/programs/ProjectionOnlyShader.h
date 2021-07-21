@@ -5,12 +5,12 @@
 class ProjectionOnlyShader
 {
 public:
-	ProjectionOnlyShader();
-	virtual ~ProjectionOnlyShader();
-	GLuint GetProgramHandle();
-	int Setup();
+    ProjectionOnlyShader();
+    virtual ~ProjectionOnlyShader();
+    GLuint GetProgramHandle();
+    int Setup();
 
 private:
-	GLuint _programHandle;
+    GLuint _programHandle;
 };
 

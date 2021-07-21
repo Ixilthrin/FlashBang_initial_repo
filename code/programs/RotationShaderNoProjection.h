@@ -5,12 +5,12 @@
 class RotationShaderNoProjection
 {
 public:
-	RotationShaderNoProjection();
-	virtual ~RotationShaderNoProjection();
-	GLuint GetProgramHandle();
-	int Setup();
+    RotationShaderNoProjection();
+    virtual ~RotationShaderNoProjection();
+    GLuint GetProgramHandle();
+    int Setup();
 
 private:
-	GLuint _programHandle;
+    GLuint _programHandle;
 };
 

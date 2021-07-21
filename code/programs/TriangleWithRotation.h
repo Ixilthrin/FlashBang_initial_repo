@@ -2,8 +2,8 @@
 class TriangleWithRotation
 {
 public:
-	TriangleWithRotation();
-	virtual ~TriangleWithRotation();
-	int Draw();
+    TriangleWithRotation();
+    virtual ~TriangleWithRotation();
+    int Draw();
 };
 

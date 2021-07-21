@@ -22,23 +22,23 @@ using std::vector;
 class Scene
 {
 private:
-	vector<int> _ids;
-	map<int, Card*> _cards;
-	map<int, CardGeometry*> _geometry;
-	map<int, CardImageData*> _imageData;
+    vector<int> _ids;
+    map<int, Card*> _cards;
+    map<int, CardGeometry*> _geometry;
+    map<int, CardImageData*> _imageData;
 public:
-	void add(int id, Card *card);
-	void addGeometry(int id, CardGeometry *geometry);
-	void addImageData(int id, CardImageData *data);
-	int size();
-	int numberOfCardSides();
-	vector<int> getIds();
-	Card *get(int id);
-	CardGeometry *getGeometry(int id);
-	CardImageData *getImageData(int id);
-	void bringToTop(int id);
-	void addImageCard(int id, int x, int y, 
-		string imagePath, string backImagePath);
-	void addCards(vector<string> filenames);
-	void addCardsFromDirectory(string basepath);
+    void add(int id, Card *card);
+    void addGeometry(int id, CardGeometry *geometry);
+    void addImageData(int id, CardImageData *data);
+    int size();
+    int numberOfCardSides();
+    vector<int> getIds();
+    Card *get(int id);
+    CardGeometry *getGeometry(int id);
+    CardImageData *getImageData(int id);
+    void bringToTop(int id);
+    void addImageCard(int id, int x, int y, 
+        string imagePath, string backImagePath);
+    void addCards(vector<string> filenames);
+    void addCardsFromDirectory(string basepath);
 };
