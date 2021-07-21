@@ -210,28 +210,39 @@ int BasicCardDeck::Draw()
     map<int, GLuint> flippedTextures;
     int textureNameIndex = 0;
 
-    auto ids = scene.getIds();
-
-    for (auto const &id : ids) 
+	vector<int> toBeRemoved;
+    for (auto const &id : scene.getIds()) 
     {
-        textures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
-
         auto imageReader = scene.getImageData(id)->getImageReader();
         GLubyte* image = imageReader->getImageData();
         int imageWidth = imageReader->getWidth();
         int imageHeight = imageReader->getHeight();
 
+		if (image == 0 || imageWidth == 0 || imageHeight == 0)
+		{
+			toBeRemoved.push_back(id);
+			continue;
+		}
+
+		textures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
+
+
         glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
         glBindTexture(GL_TEXTURE_2D, textureNames[textureNameIndex]);
 
-        if (image == nullptr)
+        if (image == NULL)
             throw(string("Failed to load image"));
         glTextureSubImage2D(textureNames[textureNameIndex], 0, 0, 0, imageWidth, imageHeight, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
         ++textureNameIndex;
     }
 
-    for (auto const &id : ids)
+	for (auto const &id : toBeRemoved)
+	{
+		scene.removeCard(id);
+	}
+
+    for (auto const &id : scene.getIds())
     {
         if (!scene.get(id)->hasFlipSide())
         {

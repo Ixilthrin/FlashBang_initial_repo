@@ -13,6 +13,12 @@ void Scene::add(int id, Card *card)
     _ids.push_back(id);
 }
 
+void Scene::removeCard(int id)
+{
+	_cards.erase(id);
+	_ids.erase(std::remove(_ids.begin(), _ids.end(), id));
+}
+
 void Scene::addGeometry(int id, CardGeometry *geometry)
 {
     _geometry.insert(pair<int, CardGeometry*>(id, geometry));
@@ -129,14 +135,28 @@ void Scene::addCardsFromDirectory(string basepath)
 
     vector<string> imageFrontNames;
     vector<string> imageBackNames;
-
+	string extension = "";
     for (const auto &entry : fs::directory_iterator(basepath))
     {
         string path{ entry.path().u8string() };
         int pos = path.find(".png", 0);
-        if (pos > 1)
+		if (pos > 0)
+		{
+			extension = ".png";
+		}
+
+		// The stb image loader doesn't always work for jpg files
+		// so disabling jpg support for now
+		//else
+		//{
+		//	pos = path.find(".jpg", 0);
+		//	if (pos > 0)
+		//		extension = ".jpg";
+		//}
+			
+        if (pos > 0)
         {
-            auto substring = path.substr(0, path.length() - 4);
+            auto substring = path.substr(0, path.length() - extension.length());
             int posBack = substring.find("-back", 0);
             if (posBack > 0)
                 imageBackNames.push_back(substring);
@@ -162,9 +182,9 @@ void Scene::addCardsFromDirectory(string basepath)
         string backPath;
         if (hasBack)
         {
-            backPath = frontBackMap[name] + ".png";
+            backPath = frontBackMap[name] + extension;
         }
-        addImageCard(id, x, y, name + ".png", backPath);
+        addImageCard(id, x, y, name + extension, backPath);
         ++id;
         x += 1;
         y += 1;
