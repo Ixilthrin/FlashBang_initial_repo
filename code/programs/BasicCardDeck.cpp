@@ -75,6 +75,7 @@ int BasicCardDeck::Draw()
     Scene scene;
 
     scene.addCardsFromDirectory(basedir);
+	scene.shuffle();
 
     Converter converter{ width, height };
 

@@ -6,6 +6,8 @@
 namespace fs = std::filesystem;
 
 #include <iostream>
+#include <stdlib.h> 
+#include <time.h>  
 
 void Scene::add(int id, Card *card)
 {
@@ -88,7 +90,7 @@ void Scene::addImageCard(int id, int x, int y,
     int width = imageData->getImageReader()->getWidth();
     int height = imageData->getImageReader()->getHeight();
 
-	int maxWidth = 300;
+	int maxWidth = 500;
     if (width > maxWidth)
     {
         height = height / (width / maxWidth);
@@ -122,8 +124,8 @@ void Scene::addCards(vector<string> filenames)
         string path = "c:/programming/FlashBangProject/resources/" + *i;
         addImageCard(id, x, y, path, "");
         ++id;
-        x += 10;
-        y += 10;
+        x += 1;
+        y += 1;
     }
 }
 
@@ -189,4 +191,34 @@ void Scene::addCardsFromDirectory(string basepath)
         x += 1;
         y += 1;
     }
+}
+
+void Scene::shuffle()
+{	
+	srand(time(NULL));
+
+	// randomly pick 2 and swap
+	for (int i = 0; i < 100; ++i)
+	{
+		int max = _ids.size();
+		int index1 = rand() % max;
+		int index2 = rand() % max;
+		if (index1 >= max || index2 >= max)
+			continue;
+		int tempId = _ids[index1];
+		_ids[index1] = _ids[index2];
+		_ids[index2] = tempId;
+	}
+
+	int x = 50;
+	int y = 50;
+
+	for (auto const& id : _ids)
+	{
+		auto card = _cards[id];
+		card->setTranslationX(x);
+		card->setTranslationY(y);
+		x += 1;
+		y += 1;
+	}
 }

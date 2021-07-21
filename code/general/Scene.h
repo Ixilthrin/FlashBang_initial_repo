@@ -42,4 +42,5 @@ public:
         string imagePath, string backImagePath);
     void addCards(vector<string> filenames);
     void addCardsFromDirectory(string basepath);
+	void shuffle();
 };

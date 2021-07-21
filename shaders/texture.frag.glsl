@@ -10,4 +10,6 @@ out vec4 color;
 void main(void)
 {
   color = texture(tex, TexCoordsFS);
+  if (color.x == 1 && color.y == 1 && color.z == 1)
+      color.w = .75;
 }
