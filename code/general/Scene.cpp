@@ -82,10 +82,11 @@ void Scene::addImageCard(int id, int x, int y,
     int width = imageData->getImageReader()->getWidth();
     int height = imageData->getImageReader()->getHeight();
 
-    if (width > 500)
+	int maxWidth = 300;
+    if (width > maxWidth)
     {
-        height = height / (width / 500);
-        width = 500;
+        height = height / (width / maxWidth);
+        width = maxWidth;
     }
 
     Card *card = new Card{ width, height, x, y, imageFile,
