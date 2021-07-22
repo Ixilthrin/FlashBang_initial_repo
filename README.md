@@ -15,6 +15,13 @@ See github project https://github.com/nothings/stb
 
 This program is composed of multiple sub-programs, each progressively exploring 
 OpenGL.  For example, program number 1 simply displays a triangle.
+
+Note:  The latest and greatest is program 10, which is a card simulator.  It
+features variable width cards, supports back side of cards, animated card 
+flipping, transparency, and the ability to move cards around to be able to
+explain ideas and review concepts (much like using index cards but with more
+features).
+
 See the main function in main.cpp that has a hard-coded switch for the current 
 program.  Change the program number to run the one you want.
 
