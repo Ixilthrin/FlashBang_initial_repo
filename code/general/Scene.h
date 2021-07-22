@@ -28,7 +28,7 @@ private:
     map<int, CardImageData*> _imageData;
 public:
     void add(int id, Card *card);
-	void removeCard(int id);
+    void removeCard(int id);
     void addGeometry(int id, CardGeometry *geometry);
     void addImageData(int id, CardImageData *data);
     int size();
@@ -42,5 +42,5 @@ public:
         string imagePath, string backImagePath);
     void addCards(vector<string> filenames);
     void addCardsFromDirectory(string basepath);
-	void shuffle();
+    void shuffle();
 };

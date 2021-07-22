@@ -1,5 +1,10 @@
 #include "CardGeometry.h"
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
 CardGeometry::CardGeometry(Card *card, Converter *converter)
 {
     _card = card;

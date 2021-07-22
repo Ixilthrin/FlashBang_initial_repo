@@ -75,7 +75,7 @@ int BasicCardDeck::Draw()
     Scene scene;
 
     scene.addCardsFromDirectory(basedir);
-	scene.shuffle();
+    scene.shuffle();
 
     Converter converter{ width, height };
 
@@ -201,7 +201,9 @@ int BasicCardDeck::Draw()
     glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(2, 2);
 
-    GLint loc = glGetUniformLocation(programHandle, "Translation");
+    GLint translation = glGetUniformLocation(programHandle, "Translation");
+    GLint rotationY = glGetUniformLocation(programHandle, "RotationY");
+    GLint objectWidth = glGetUniformLocation(programHandle, "ObjectWidth");
     
     int numberOfTexturesNeeded = scene.numberOfCardSides();
     GLuint *textureNames = new GLuint[numberOfTexturesNeeded];
@@ -211,7 +213,7 @@ int BasicCardDeck::Draw()
     map<int, GLuint> flippedTextures;
     int textureNameIndex = 0;
 
-	vector<int> toBeRemoved;
+    vector<int> toBeRemoved;
     for (auto const &id : scene.getIds()) 
     {
         auto imageReader = scene.getImageData(id)->getImageReader();
@@ -219,13 +221,13 @@ int BasicCardDeck::Draw()
         int imageWidth = imageReader->getWidth();
         int imageHeight = imageReader->getHeight();
 
-		if (image == 0 || imageWidth == 0 || imageHeight == 0)
-		{
-			toBeRemoved.push_back(id);
-			continue;
-		}
+        if (image == 0 || imageWidth == 0 || imageHeight == 0)
+        {
+            toBeRemoved.push_back(id);
+            continue;
+        }
 
-		textures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
+        textures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
 
 
         glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
@@ -238,10 +240,10 @@ int BasicCardDeck::Draw()
         ++textureNameIndex;
     }
 
-	for (auto const &id : toBeRemoved)
-	{
-		scene.removeCard(id);
-	}
+    for (auto const &id : toBeRemoved)
+    {
+        scene.removeCard(id);
+    }
 
     for (auto const &id : scene.getIds())
     {
@@ -288,14 +290,15 @@ int BasicCardDeck::Draw()
     glPointSize(5);
     glLineWidth(3);
     glDisable(GL_DEPTH_TEST);
-    
 
+    float rot = 0;
+    bool flippedHalf = false;
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-        if (loc != -1)
+        if (translation != -1)
         {
             float xTrans, yTrans;
 
@@ -304,6 +307,28 @@ int BasicCardDeck::Draw()
             for (auto const& id : ids)
             {
                 auto card = scene.get(id);
+                if (card->hasFlipSide() && card->requestFlip())
+                {
+                    glUniform1f(rotationY, rot);
+                    glUniform1f(objectWidth, converter.screenTranslationXToNDC(card->getWidth()));
+                    rot += .15;
+                    if (rot > 1.57 && !flippedHalf)
+                    {
+                        rot += 3.14f;
+                        card->flipHalfComplete();
+                        flippedHalf = true;
+                    }
+                    if (rot > 6.28)
+                    {
+                        card->flipComplete();
+                        rot = 0;
+                        flippedHalf = false;
+                    }
+                }
+                else
+                {
+                    glUniform1f(rotationY, 0);
+                }
                 if (card->hasFlipSide() && card->isFlipped())
                 {
                     glBindTextureUnit(0, flippedTextures[id]);
@@ -325,7 +350,7 @@ int BasicCardDeck::Draw()
                     yTrans = converter.screenTranslationYToNDC(scene.get(id)->getTranslationY());
                 }
                 
-                glUniform2f(loc, xTrans, yTrans);
+                glUniform2f(translation, xTrans, yTrans);
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &(indexData.data())[indexOffsets[id]]);
             }
 

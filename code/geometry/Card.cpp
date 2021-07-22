@@ -22,6 +22,7 @@ Card::Card(
     _vertShaderPath = vertShaderPath;
     _fragShaderPath = fragShaderPath;
     _isFlipped = false;
+    _requestFlip = false;
 }
 
 void Card::setTranslationX(int translation)
@@ -76,7 +77,7 @@ bool Card::hasFlipSide()
 
 void Card::flip()
 {
-    _isFlipped = !_isFlipped;
+    _requestFlip = true;
 }
 
 bool Card::isFlipped()
@@ -105,4 +106,19 @@ std::string Card::getVertShaderPath()
 std::string Card::getFragShaderPath()
 {
     return _fragShaderPath;
+}
+
+bool Card::requestFlip()
+{
+    return _requestFlip;
+}
+
+void Card::flipHalfComplete()
+{
+    _isFlipped = !_isFlipped;
+}
+
+void Card::flipComplete()
+{
+    _requestFlip = false;
 }

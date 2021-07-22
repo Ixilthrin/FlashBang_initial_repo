@@ -16,6 +16,7 @@ private:
     std::string _vertShaderPath;
     std::string _fragShaderPath;
     bool _isFlipped;
+    bool _requestFlip;
 
 public:
     Card(int width,
@@ -41,4 +42,7 @@ public:
     bool contains(int x, int y);
     std::string getVertShaderPath();
     std::string getFragShaderPath();
+    bool requestFlip();
+    void flipHalfComplete();
+    void flipComplete();
 };

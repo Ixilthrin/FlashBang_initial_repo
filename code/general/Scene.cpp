@@ -17,8 +17,8 @@ void Scene::add(int id, Card *card)
 
 void Scene::removeCard(int id)
 {
-	_cards.erase(id);
-	_ids.erase(std::remove(_ids.begin(), _ids.end(), id));
+    _cards.erase(id);
+    _ids.erase(std::remove(_ids.begin(), _ids.end(), id));
 }
 
 void Scene::addGeometry(int id, CardGeometry *geometry)
@@ -90,7 +90,7 @@ void Scene::addImageCard(int id, int x, int y,
     int width = imageData->getImageReader()->getWidth();
     int height = imageData->getImageReader()->getHeight();
 
-	int maxWidth = 500;
+    int maxWidth = 500;
     if (width > maxWidth)
     {
         height = height / (width / maxWidth);
@@ -98,14 +98,13 @@ void Scene::addImageCard(int id, int x, int y,
     }
 
     Card *card = new Card{ width, height, x, y, imageFile,
-        "c:/programming/FlashBang/shaders/translation_and_texture.vert.glsl",
+        "c:/programming/FlashBang/shaders/translate_rotatey_texture.vert.glsl",
         "c:/programming/FlashBang/shaders/texture.frag.glsl"
     };
 
     if (backImageFile.length() > 0)
     {
         card->setFlippedImagePath(backImageFile);
-        cout << "Back image = " << backImageFile << endl;
     }
 
     add(id, card);
@@ -137,25 +136,25 @@ void Scene::addCardsFromDirectory(string basepath)
 
     vector<string> imageFrontNames;
     vector<string> imageBackNames;
-	string extension = "";
+    string extension = "";
     for (const auto &entry : fs::directory_iterator(basepath))
     {
         string path{ entry.path().u8string() };
         int pos = path.find(".png", 0);
-		if (pos > 0)
-		{
-			extension = ".png";
-		}
+        if (pos > 0)
+        {
+            extension = ".png";
+        }
 
-		// The stb image loader doesn't always work for jpg files
-		// so disabling jpg support for now
-		//else
-		//{
-		//	pos = path.find(".jpg", 0);
-		//	if (pos > 0)
-		//		extension = ".jpg";
-		//}
-			
+        // The stb image loader doesn't always work for jpg files
+        // so disabling jpg support for now
+        //else
+        //{
+        //    pos = path.find(".jpg", 0);
+        //    if (pos > 0)
+        //        extension = ".jpg";
+        //}
+            
         if (pos > 0)
         {
             auto substring = path.substr(0, path.length() - extension.length());
@@ -194,31 +193,31 @@ void Scene::addCardsFromDirectory(string basepath)
 }
 
 void Scene::shuffle()
-{	
-	srand(time(NULL));
+{    
+    srand(time(NULL));
 
-	// randomly pick 2 and swap
-	for (int i = 0; i < 100; ++i)
-	{
-		int max = _ids.size();
-		int index1 = rand() % max;
-		int index2 = rand() % max;
-		if (index1 >= max || index2 >= max)
-			continue;
-		int tempId = _ids[index1];
-		_ids[index1] = _ids[index2];
-		_ids[index2] = tempId;
-	}
+    // randomly pick 2 and swap
+    for (int i = 0; i < 100; ++i)
+    {
+        int max = _ids.size();
+        int index1 = rand() % max;
+        int index2 = rand() % max;
+        if (index1 >= max || index2 >= max)
+            continue;
+        int tempId = _ids[index1];
+        _ids[index1] = _ids[index2];
+        _ids[index2] = tempId;
+    }
 
-	int x = 50;
-	int y = 50;
+    int x = 50;
+    int y = 50;
 
-	for (auto const& id : _ids)
-	{
-		auto card = _cards[id];
-		card->setTranslationX(x);
-		card->setTranslationY(y);
-		x += 1;
-		y += 1;
-	}
+    for (auto const& id : _ids)
+    {
+        auto card = _cards[id];
+        card->setTranslationX(x);
+        card->setTranslationY(y);
+        x += 1;
+        y += 1;
+    }
 }
