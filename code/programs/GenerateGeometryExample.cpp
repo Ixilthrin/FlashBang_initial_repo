@@ -36,7 +36,7 @@ GenerateGeometryExample::~GenerateGeometryExample()
 {
 }
 
-int GenerateGeometryExample::Draw()
+int GenerateGeometryExample::Start()
 {
     GLFWwindow* window;
 

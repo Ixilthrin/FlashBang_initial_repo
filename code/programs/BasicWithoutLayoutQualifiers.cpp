@@ -25,7 +25,7 @@ BasicWithoutLayoutQualifiers::~BasicWithoutLayoutQualifiers()
 {
 }
 
-int BasicWithoutLayoutQualifiers::Draw()
+int BasicWithoutLayoutQualifiers::Start()
 {
     GLFWwindow* window;
 

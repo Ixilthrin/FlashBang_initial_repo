@@ -26,7 +26,7 @@ BasicTriangleAlternateVBBinding::~BasicTriangleAlternateVBBinding()
 {
 }
 
-int BasicTriangleAlternateVBBinding::Draw()
+int BasicTriangleAlternateVBBinding::Start()
 {
     GLFWwindow* window;
 

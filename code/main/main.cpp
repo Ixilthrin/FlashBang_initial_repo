@@ -40,37 +40,37 @@ extern "C"
 int showBasicTriangle()
 {
     BasicTriangle drawer;
-    return drawer.Draw();
+    return drawer.Start();
 }
 
 int showTriagleUsingAlternateVBBinding()
 {
     BasicTriangleAlternateVBBinding drawer;
-    return drawer.Draw();
+    return drawer.Start();
 }
 
 int showTriangleWithoutLocationQualifiers()
 {
     BasicWithoutLayoutQualifiers drawer;
-    return drawer.Draw();
+    return drawer.Start();
 }
 
 int showTwoTrianglesUsingIndexBuffer()
 {
     TwoTrianglesUsingIndexBuffer drawer;
-    return drawer.Draw();
+    return drawer.Start();
 }
 
 int showTriangleWithRotation()
 {
     TriangleWithRotation drawer;
-    return drawer.Draw();
+    return drawer.Start();
 }
 
 int showGenerateGeometryExample()
 {
     GenerateGeometryExample drawer;
-    return drawer.Draw();
+    return drawer.Start();
 }
 
 int runBasicGraphicsLoop()
@@ -92,13 +92,13 @@ int runBasicProjectionGraphicsLoop()
 int runBasicMouseSelection()
 {
     BasicMouseSelection drawer;
-    return drawer.Draw();
+    return drawer.Start();
 }
 
 int runBasicCardDeck()
 {
     BasicCardDeck drawer;
-    return drawer.Draw();
+    return drawer.Start();
 }
 
 void showVersionInfo(int result)

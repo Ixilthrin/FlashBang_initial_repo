@@ -36,7 +36,7 @@ TriangleWithRotation::~TriangleWithRotation()
 {
 }
 
-int TriangleWithRotation::Draw()
+int TriangleWithRotation::Start()
 {
     GLFWwindow* window;
 

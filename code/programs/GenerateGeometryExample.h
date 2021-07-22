@@ -4,6 +4,6 @@ class GenerateGeometryExample
 public:
     GenerateGeometryExample();
     virtual ~GenerateGeometryExample();
-    int Draw();
+    int Start();
 };
 

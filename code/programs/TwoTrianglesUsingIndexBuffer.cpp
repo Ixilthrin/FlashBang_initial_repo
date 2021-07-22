@@ -26,7 +26,7 @@ TwoTrianglesUsingIndexBuffer::~TwoTrianglesUsingIndexBuffer()
 {
 }
 
-int TwoTrianglesUsingIndexBuffer::Draw()
+int TwoTrianglesUsingIndexBuffer::Start()
 {
     GLFWwindow* window;
 

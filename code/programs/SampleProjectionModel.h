@@ -19,7 +19,7 @@ public:
     SampleProjectionModel();
     virtual ~SampleProjectionModel();
     virtual int Setup();
-    virtual int Draw();
+    virtual int Start();
 
 private:
     GLuint _vaoHandle;

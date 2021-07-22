@@ -57,7 +57,7 @@ int SampleProjectionModel::Setup()
     return 0;
 }
 
-int SampleProjectionModel::Draw()
+int SampleProjectionModel::Start()
 {
     float angle = 0.0f;
     float rotationRate = 2.0f * 3.14159f / 10.0f;

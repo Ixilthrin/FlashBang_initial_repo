@@ -5,6 +5,6 @@ class BasicCardDeck
 public:
     BasicCardDeck();
     virtual ~BasicCardDeck();
-    int Draw();
+    int Start();
 };
 

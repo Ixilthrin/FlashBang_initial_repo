@@ -9,9 +9,7 @@ Card::Card(
     int height, 
     int translationX, 
     int translationY, 
-    std::string imagePath,
-    std::string vertShaderPath,
-    std::string fragShaderPath)
+    std::string imagePath)
 {
     _width = width;
     _height = height;
@@ -19,8 +17,6 @@ Card::Card(
     _translationY = translationY;
     _imagePath = imagePath;
     _flippedImagePath = "";
-    _vertShaderPath = vertShaderPath;
-    _fragShaderPath = fragShaderPath;
     _isFlipped = false;
     _requestFlip = false;
 }
@@ -98,16 +94,6 @@ bool Card::contains(int x, int y)
     return false;
 }
 
-std::string Card::getVertShaderPath()
-{
-    return _vertShaderPath;
-}
-
-std::string Card::getFragShaderPath()
-{
-    return _fragShaderPath;
-}
-
 bool Card::requestFlip()
 {
     return _requestFlip;
@@ -121,4 +107,14 @@ void Card::flipHalfComplete()
 void Card::flipComplete()
 {
     _requestFlip = false;
+}
+
+std::string Card::getVertexShaderPath()
+{
+	return "c:/programming/FlashBang/shaders/translate_rotatey_texture.vert.glsl";
+}
+
+std::string Card::getFragmentShaderPath()
+{
+	return "c:/programming/FlashBang/shaders/texture.frag.glsl";
 }

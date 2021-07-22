@@ -97,10 +97,7 @@ void Scene::addImageCard(int id, int x, int y,
         width = maxWidth;
     }
 
-    Card *card = new Card{ width, height, x, y, imageFile,
-        "c:/programming/FlashBang/shaders/translate_rotatey_texture.vert.glsl",
-        "c:/programming/FlashBang/shaders/texture.frag.glsl"
-    };
+    Card *card = new Card{ width, height, x, y, imageFile };
 
     if (backImageFile.length() > 0)
     {

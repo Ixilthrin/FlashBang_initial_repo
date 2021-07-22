@@ -29,7 +29,7 @@ BasicTriangle::~BasicTriangle()
 
 // Keep this as one large function so we can see all
 // the low-level steps needed to render a basic triangle
-int BasicTriangle::Draw()
+int BasicTriangle::Start()
 {
     GLFWwindow* window;
 

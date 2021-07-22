@@ -31,7 +31,7 @@ BasicMouseSelection::~BasicMouseSelection()
 {
 }
 
-int BasicMouseSelection::Draw()
+int BasicMouseSelection::Start()
 {
     GLFWwindow* window;
 

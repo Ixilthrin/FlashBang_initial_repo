@@ -4,6 +4,6 @@ class BasicWithoutLayoutQualifiers
 public:
     BasicWithoutLayoutQualifiers();
     virtual ~BasicWithoutLayoutQualifiers();
-    int Draw();
+    int Start();
 };
 

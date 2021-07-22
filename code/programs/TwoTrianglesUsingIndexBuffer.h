@@ -4,6 +4,6 @@ class TwoTrianglesUsingIndexBuffer
 public:
     TwoTrianglesUsingIndexBuffer();
     virtual ~TwoTrianglesUsingIndexBuffer();
-    int Draw();
+    int Start();
 };
 

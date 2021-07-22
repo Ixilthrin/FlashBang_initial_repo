@@ -55,7 +55,7 @@ int BasicGraphicsLoop::Run(string title)
         glClear(GL_COLOR_BUFFER_BIT);
 
         for (auto model : _models)
-            model->Draw();
+            model->Start();
 
         _window.SwapBuffers();
 

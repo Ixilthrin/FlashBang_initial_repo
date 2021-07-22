@@ -39,7 +39,7 @@ BasicCardDeck::~BasicCardDeck()
 {
 }
 
-int BasicCardDeck::Draw()
+int BasicCardDeck::Start()
 {
     GLFWwindow* window;
 
@@ -90,8 +90,8 @@ int BasicCardDeck::Draw()
         return -4;
 
     GLuint programHandle = ShaderProgramFactory::BuildShaderProgram(
-        scene.get(0)->getVertShaderPath(),
-        scene.get(0)->getFragShaderPath()
+        Card::getVertexShaderPath(),
+        Card::getFragmentShaderPath()
     );
 
     glUseProgram(programHandle);

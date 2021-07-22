@@ -58,7 +58,7 @@ int SampleModel::Setup()
     return 0;
 }
 
-int SampleModel::Draw()
+int SampleModel::Start()
 {
     float angle = 0.0f;
     float rotationRate = 2.0f * 3.14159f / 10.0f;

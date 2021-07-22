@@ -13,8 +13,6 @@ private:
     int _translationY;
     std::string _imagePath;
     std::string _flippedImagePath;
-    std::string _vertShaderPath;
-    std::string _fragShaderPath;
     bool _isFlipped;
     bool _requestFlip;
 
@@ -23,9 +21,7 @@ public:
         int height,
         int translationX,
         int translationY,
-        std::string imagePath = "",
-        std::string vertShaderPath = "",
-        std::string fragShaderPath = "");
+        std::string imagePath = "");
 
     void setTranslationX(int translation);
     void setTranslationY(int translation);
@@ -40,9 +36,9 @@ public:
     void flip();
     bool isFlipped();
     bool contains(int x, int y);
-    std::string getVertShaderPath();
-    std::string getFragShaderPath();
     bool requestFlip();
     void flipHalfComplete();
     void flipComplete();
+	static std::string getVertexShaderPath();
+	static std::string getFragmentShaderPath();
 };

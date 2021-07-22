@@ -4,6 +4,6 @@ class BasicMouseSelection
 public:
     BasicMouseSelection();
     virtual ~BasicMouseSelection();
-    int Draw();
+    int Start();
 };
 
