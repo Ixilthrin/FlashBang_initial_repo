@@ -110,11 +110,11 @@ int BasicMouseSelection::Start()
 
     GLuint vaoHandle;
 
-    Card card{ 200, 100, 20, 50 };
-    CardDeck deck;
-    deck.add(0, &card);
 
     Converter converter{ width, height };
+    CardDeck deck{ &converter };
+    Card card{ 200, 100, 20, 50 };
+    deck.add(0, &card);
 
     float x1 = converter.screenXToNDC(0);
     float y1 = converter.screenYToNDC(0);
@@ -203,7 +203,7 @@ int BasicMouseSelection::Start()
     glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(2, 2);
 
-	CardDeckInputListener listener;
+    CardDeckInputListener listener;
     listener.setDeck(&deck);
 
     GLint loc = glGetUniformLocation(programHandle, "Translation");
@@ -212,7 +212,7 @@ int BasicMouseSelection::Start()
     glPointSize(5);
     glLineWidth(3);
 
-    ImageReader imageProvider("c:/programming/FlashBangProject/resources/test.png");
+    ImageReader imageProvider("c:/programming/FlashBangProject/decks/default/test.png");
     
     GLubyte* image = imageProvider.getImageData();
 
@@ -232,15 +232,15 @@ int BasicMouseSelection::Start()
     GLuint textureNames[1];
     glCreateTextures(GL_TEXTURE_2D, 1, textureNames);
 
-    glTextureStorage2D(textureNames[0], 1, GL_RGB8, imageProvider.getWidth(), imageProvider.getHeight());
+    glTextureStorage2D(textureNames[0], 1, GL_RGBA8, imageProvider.getWidth(), imageProvider.getHeight());
     glBindTexture(GL_TEXTURE_2D, textureNames[0]);
-    glTextureSubImage2D(textureNames[0], 0, 0, 0, imageProvider.getWidth(), imageProvider.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, image);
+    glTextureSubImage2D(textureNames[0], 0, 0, 0, imageProvider.getWidth(), imageProvider.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, image);
 
     glBindTextureUnit(0, textureNames[0]);
 
-	CardDeckEventTranslator translator;
+    CardDeckEventTranslator translator;
 
-	CardDeckDispatchingMouseHandlers::translator = &translator;
+    CardDeckDispatchingMouseHandlers::translator = &translator;
     translator.registerListener(&listener);
     glfwSetCursorPosCallback(window, CardDeckDispatchingMouseHandlers::cursor_position_callback);
     glfwSetCursorEnterCallback(window, CardDeckDispatchingMouseHandlers::cursor_enter_callback);

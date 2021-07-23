@@ -20,19 +20,17 @@ using std::map;
 using std::pair;
 using std::vector;
 
-#include "CardDeckDispatchingMouseHandlers.h" // Interesting: putting this after next line causes link errors
-#include <GLFW/glfw3.h>
-
-#include "CardDeck.h"
-#include "Card.h"
 #include "CardGeometry.h"
-#include "Converter.h"
-
 #include "ShaderProgramFactory.h"
-
 
 BasicCardDeck::BasicCardDeck()
 {
+    _width = 1600;
+    _height = 900;
+    _textureNames = 0;
+    _listener = new CardDeckInputListener();
+    _deck = new CardDeck();
+    _translator = new CardDeckEventTranslator();
 }
 
 BasicCardDeck::~BasicCardDeck()
@@ -41,27 +39,69 @@ BasicCardDeck::~BasicCardDeck()
 
 int BasicCardDeck::Start()
 {
-    GLFWwindow* window;
+    int result = initializeWindow();
+    if (result != 0)
+        return result;
 
+    result = initializeOpenGL();
+    if (result != 0)
+        return result;
+
+    loadDeck();
+
+    result = setupShaders();
+    if (result != 0)
+        return result;
+
+    setupBuffers();
+    setupIndexData();
+    setupBindings();
+    setupUniformLocations();
+    setupTextures();
+    setupEventListeners();
+    setupGlobalGraphicsState();
+
+    _currentFlipRotation = 0;
+    _flippedHalf = false;
+
+    while (!glfwWindowShouldClose(_window))
+    {
+        renderFrame();
+        glfwSwapBuffers(_window);
+        glfwPollEvents();
+    }
+
+    cleanUp();
+
+    return 0;
+}
+
+int BasicCardDeck::initializeWindow()
+{
     if (!glfwInit())
         return -1;
 
-    int width = 1600;
-    int height = 900;
-    window = glfwCreateWindow(width, height, "Simulated Card Deck Prototype", NULL, NULL);
-    if (!window)
+    _window = glfwCreateWindow(_width, _height, "Simulated Card Deck Prototype", NULL, NULL);
+    if (!_window)
     {
         glfwTerminate();
         return -2;
     }
 
-    glfwMakeContextCurrent(window); 
+    glfwMakeContextCurrent(_window);
 
+    return 0;
+}
 
+int BasicCardDeck::initializeOpenGL()
+{
     if (!gladLoadGL())
         return -3;
+    return 0;
+}
 
-
+int BasicCardDeck::loadDeck()
+{
     string targetFile;
     ifstream myfile("c:/programming/FlashBangProject/flashbang.props");
     if (myfile.is_open())
@@ -69,117 +109,103 @@ int BasicCardDeck::Start()
         getline(myfile, targetFile);
         myfile.close();
     }
+    string baseDir = "c:/programming/FlashBangProject/" + targetFile + "/";
 
-    string basedir = "c:/programming/FlashBangProject/" + targetFile + "/";
+    _converter = new Converter(_width, _height);
+    _deck->setConverter(_converter);
+    _deck->setUpFromBaseDir(baseDir);
+    return 0;
+}
 
-    CardDeck deck;
-
-    deck.addCardsFromDirectory(basedir);
-    deck.shuffle();
-
-    Converter converter{ width, height };
-
-    for (auto const& id : deck.getIds())
-    {
-        auto geometry = new CardGeometry(deck.get(id), &converter);
-        deck.addGeometry(id, geometry);
-    }
-
+int BasicCardDeck::setupShaders()
+{
     GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
     if (vertShader == 0)
         return -4;
 
-    GLuint programHandle = ShaderProgramFactory::BuildShaderProgram(
+    _programHandle = ShaderProgramFactory::BuildShaderProgram(
         Card::getVertexShaderPath(),
-        Card::getFragmentShaderPath() 
+        Card::getFragmentShaderPath()
     );
 
-    glUseProgram(programHandle);
+    glUseProgram(_programHandle);
 
-    //glDetachShader(programHandle, vertShader);
-    //glDetachShader(programHandle, fragShader);
+    //glDetachShader(_programHandle, vertShader);
+    //glDetachShader(_programHandle, fragShader);
 
     //glDeleteShader(vertShader);
     //glDeleteShader(fragShader);
+    return 0;
+}
 
-	CardDeckInputListener listener;
-    listener.setDeck(&deck);
-
+int BasicCardDeck::setupBuffers()
+{
     int positionLength = 0;
     int colorLength = 0;
-    int texCoordLength = 0; 
-    
-    for (auto const& id : deck.getIds())
+    int texCoordLength = 0;
+
+    for (auto const& id : _deck->getIds())
     {
-        positionLength += deck.getGeometry(id)->getPositions().size();
-        colorLength += deck.getGeometry(id)->getColors().size();
-        texCoordLength += deck.getGeometry(id)->getTexCoords().size();
+        positionLength += _deck->getGeometry(id)->getPositions().size();
+        colorLength += _deck->getGeometry(id)->getColors().size();
+        texCoordLength += _deck->getGeometry(id)->getTexCoords().size();
     }
 
     GLuint vboHandles[4];
     glGenBuffers(4, vboHandles);
 
-    GLuint positionBufferHandle = vboHandles[0];
-    GLuint colorBufferHandle = vboHandles[1];
-    GLuint texCoordsBufferHandle = vboHandles[2];
-    GLuint indexCoordsBufferHandle = vboHandles[3];
+    _positionBufferHandle = vboHandles[0];
+    _colorBufferHandle = vboHandles[1];
+    _texCoordsBufferHandle = vboHandles[2];
+    _indexCoordsBufferHandle = vboHandles[3];
 
-    glNamedBufferData(positionBufferHandle, positionLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferData(_positionBufferHandle, positionLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
-    glNamedBufferData(colorBufferHandle, colorLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferData(_colorBufferHandle, colorLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
-    glNamedBufferData(texCoordsBufferHandle, texCoordLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferData(_texCoordsBufferHandle, texCoordLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
     int positionsOffset = 0;
     int colorsOffset = 0;
     int texCoordsOffset = 0;
 
-    for (auto const& id : deck.getIds())
+    for (auto const& id : _deck->getIds())
     {
-        auto geometry = deck.getGeometry(id);
+        auto geometry = _deck->getGeometry(id);
 
         auto positions = geometry->getPositions();
         auto positionsSize = positions.size() * sizeof(float);
-        glNamedBufferSubData(positionBufferHandle, positionsOffset, positionsSize, positions.data());
+        glNamedBufferSubData(_positionBufferHandle, positionsOffset, positionsSize, positions.data());
         positionsOffset += positionsSize;
 
         auto colors = geometry->getColors();
         auto colorsSize = colors.size() * sizeof(float);
-        glNamedBufferSubData(colorBufferHandle, colorsOffset, colorsSize, colors.data());
+        glNamedBufferSubData(_colorBufferHandle, colorsOffset, colorsSize, colors.data());
         colorsOffset += colorsSize;
 
         auto texCoords = geometry->getTexCoords();
         auto texCoordsSize = texCoords.size() * sizeof(float);
-        glNamedBufferSubData(texCoordsBufferHandle, texCoordsOffset, texCoordsSize, texCoords.data());
+        glNamedBufferSubData(_texCoordsBufferHandle, texCoordsOffset, texCoordsSize, texCoords.data());
         texCoordsOffset += texCoordsSize;
     }
-    
-    vector<unsigned int> indexData;
 
-    unsigned int baseIndex = 0;
+    return 0;
+}
 
-    map<int, int> indexOffsets;
-    int currentIndexOffset = 0;
-    for (auto const &id : deck.getIds())
-    {
-        auto geom = deck.getGeometry(id);
-        auto currentIndices = geom->getIndexData();
-        indexOffsets.insert(pair<int, int>(id, currentIndexOffset));
-        currentIndexOffset += currentIndices.size();
-        for (auto const &value : currentIndices)
-        {
-            auto index = value + baseIndex;
-            indexData.push_back(index);
-        }
-        baseIndex += geom->getPositions().size() / 3;
-    }
+int BasicCardDeck::setupIndexData()
+{
+    _deck->getIndexData(_indexData, _indexOffsets);
+    return 0;
+}
 
+int BasicCardDeck::setupBindings()
+{
     // I don't know why the following 2 lines did not work, but instead of
     // binding an index buffer I just use the array of index values.
 
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexCoordsBufferHandle);
     //glBufferData(indexCoordsBufferHandle, indexData.size() * sizeof(unsigned int), indexData.data(), GL_STATIC_DRAW);
-    
+
     GLuint vaoHandle;
     glGenVertexArrays(1, &vaoHandle);
     glBindVertexArray(vaoHandle);
@@ -188,9 +214,9 @@ int BasicCardDeck::Start()
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
-    glBindVertexBuffer(0, positionBufferHandle, 0, sizeof(GLfloat) * 3);
-    glBindVertexBuffer(1, colorBufferHandle, 0, sizeof(GLfloat) * 3);
-    glBindVertexBuffer(2, texCoordsBufferHandle, 0, sizeof(GLfloat) * 2);
+    glBindVertexBuffer(0, _positionBufferHandle, 0, sizeof(GLfloat) * 3);
+    glBindVertexBuffer(1, _colorBufferHandle, 0, sizeof(GLfloat) * 3);
+    glBindVertexBuffer(2, _texCoordsBufferHandle, 0, sizeof(GLfloat) * 2);
 
     glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(0, 0);
@@ -201,22 +227,32 @@ int BasicCardDeck::Start()
     glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(2, 2);
 
-    GLint translation = glGetUniformLocation(programHandle, "Translation");
-    GLint rotationY = glGetUniformLocation(programHandle, "RotationY");
-    GLint objectWidth = glGetUniformLocation(programHandle, "ObjectWidth");
-    
-    int numberOfTexturesNeeded = deck.numberOfCardSides();
-    GLuint *textureNames = new GLuint[numberOfTexturesNeeded];
-    glCreateTextures(GL_TEXTURE_2D, numberOfTexturesNeeded, textureNames);
+    glBindVertexArray(vaoHandle);
 
-    map<int, GLuint> textures;
-    map<int, GLuint> flippedTextures;
+    return 0;
+}
+
+int BasicCardDeck::setupUniformLocations()
+{
+    _translationLocation = glGetUniformLocation(_programHandle, "Translation");
+    _rotationYLocation = glGetUniformLocation(_programHandle, "RotationY");
+    _objectWidthLocation = glGetUniformLocation(_programHandle, "ObjectWidth");
+
+    return 0;
+}
+
+int BasicCardDeck::setupTextures()
+{
+    int numberOfTexturesNeeded = _deck->numberOfCardSides();
+    _textureNames = new GLuint[numberOfTexturesNeeded];
+    glCreateTextures(GL_TEXTURE_2D, numberOfTexturesNeeded, _textureNames);
+
     int textureNameIndex = 0;
 
     vector<int> toBeRemoved;
-    for (auto const &id : deck.getIds())
+    for (auto const &id : _deck->getIds())
     {
-        auto imageReader = deck.getImageData(id)->getImageReader();
+        auto imageReader = _deck->getImageData(id)->getImageReader();
         GLubyte* image = imageReader->getImageData();
         int imageWidth = imageReader->getWidth();
         int imageHeight = imageReader->getHeight();
@@ -227,62 +263,76 @@ int BasicCardDeck::Start()
             continue;
         }
 
-        textures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
+        _textures.insert(pair<int, GLuint>(id, _textureNames[textureNameIndex]));
 
 
-        glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
-        glBindTexture(GL_TEXTURE_2D, textureNames[textureNameIndex]);
+        glTextureStorage2D(_textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
+        glBindTexture(GL_TEXTURE_2D, _textureNames[textureNameIndex]);
 
         if (image == NULL)
             throw(string("Failed to load image"));
-        glTextureSubImage2D(textureNames[textureNameIndex], 0, 0, 0, imageWidth, imageHeight, GL_RGBA, GL_UNSIGNED_BYTE, image);
+        glTextureSubImage2D(_textureNames[textureNameIndex], 0, 0, 0, imageWidth, imageHeight, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
         ++textureNameIndex;
     }
 
     for (auto const &id : toBeRemoved)
     {
-		deck.removeCard(id);
+        _deck->removeCard(id);
     }
 
-    for (auto const &id : deck.getIds())
+    for (auto const &id : _deck->getIds())
     {
-        if (!deck.get(id)->hasFlipSide())
+        if (!_deck->get(id)->hasFlipSide())
         {
             continue;
         }
 
-        flippedTextures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
+        _flippedTextures.insert(pair<int, GLuint>(id, _textureNames[textureNameIndex]));
 
-        auto reader = deck.getImageData(id)->getBackImageReader();
+        auto reader = _deck->getImageData(id)->getBackImageReader();
 
         GLubyte* image = reader->getImageData();
         int imageWidth = reader->getWidth();
         int imageHeight = reader->getHeight();
 
-        glTextureStorage2D(textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
-        glBindTexture(GL_TEXTURE_2D, textureNames[textureNameIndex]);
+        glTextureStorage2D(_textureNames[textureNameIndex], 1, GL_RGBA8, imageWidth, imageHeight);
+        glBindTexture(GL_TEXTURE_2D, _textureNames[textureNameIndex]);
 
         if (image == nullptr)
             throw(string("Failed to load image"));
-        glTextureSubImage2D(textureNames[textureNameIndex], 0, 0, 0, imageWidth, imageHeight, GL_RGBA, GL_UNSIGNED_BYTE, image);
+        glTextureSubImage2D(_textureNames[textureNameIndex], 0, 0, 0, imageWidth, imageHeight, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
         ++textureNameIndex;
     }
+    return 0;
+}
 
-	CardDeckEventTranslator translator;
+int BasicCardDeck::cleanUp()
+{
+    if (_textureNames)
+    {
+        glDeleteTextures(_deck->size(), _textureNames);
+        delete[] _textureNames;
+    }
 
-	CardDeckDispatchingMouseHandlers::translator = &translator;
-    translator.registerListener(&listener);
-    glfwSetCursorPosCallback(window, CardDeckDispatchingMouseHandlers::cursor_position_callback);
-    glfwSetCursorEnterCallback(window, CardDeckDispatchingMouseHandlers::cursor_enter_callback);
-    glfwSetMouseButtonCallback(window, CardDeckDispatchingMouseHandlers::mouse_button_callback);
-    glfwSetScrollCallback(window, CardDeckDispatchingMouseHandlers::scroll_callback);
+    return 0;
+}
 
-    glfwSwapInterval(1);
-    glBindVertexArray(vaoHandle);
+int BasicCardDeck::setupEventListeners()
+{
+    _listener->setDeck(_deck);
+    CardDeckDispatchingMouseHandlers::translator = _translator;
+    _translator->registerListener(_listener);
+    glfwSetCursorPosCallback(_window, CardDeckDispatchingMouseHandlers::cursor_position_callback);
+    glfwSetCursorEnterCallback(_window, CardDeckDispatchingMouseHandlers::cursor_enter_callback);
+    glfwSetMouseButtonCallback(_window, CardDeckDispatchingMouseHandlers::mouse_button_callback);
+    glfwSetScrollCallback(_window, CardDeckDispatchingMouseHandlers::scroll_callback);
+    return 0;
+}
 
-
+int BasicCardDeck::setupGlobalGraphicsState()
+{
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glCullFace(GL_BACK);
@@ -290,80 +340,68 @@ int BasicCardDeck::Start()
     glPointSize(5);
     glLineWidth(3);
     glDisable(GL_DEPTH_TEST);
+    glfwSwapInterval(1);
+    return 0;
+}
 
-    float rot = 0;
-    bool flippedHalf = false;
-    while (!glfwWindowShouldClose(window))
+void BasicCardDeck::renderFrame()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if (_translationLocation != -1)
     {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        float xTrans, yTrans;
 
-
-        if (translation != -1)
+        int objectCount = 0;
+        vector<int> ids = _deck->getIds();
+        for (auto const& id : ids)
         {
-            float xTrans, yTrans;
-
-            int objectCount = 0;
-            vector<int> ids = deck.getIds();
-            for (auto const& id : ids)
+            auto card = _deck->get(id);
+            if (card->hasFlipSide() && card->requestFlip())
             {
-                auto card = deck.get(id);
-                if (card->hasFlipSide() && card->requestFlip())
+                glUniform1f(_rotationYLocation, _currentFlipRotation);
+                glUniform1f(_objectWidthLocation, _converter->screenTranslationXToNDC(card->getWidth()));
+                _currentFlipRotation += .15;
+                if (_currentFlipRotation > 1.57 && !_flippedHalf)
                 {
-                    glUniform1f(rotationY, rot);
-                    glUniform1f(objectWidth, converter.screenTranslationXToNDC(card->getWidth()));
-                    rot += .15;
-                    if (rot > 1.57 && !flippedHalf)
-                    {
-                        rot += 3.14f;
-                        card->flipHalfComplete();
-                        flippedHalf = true;
-                    }
-                    if (rot > 6.28)
-                    {
-                        card->flipComplete();
-                        rot = 0;
-                        flippedHalf = false;
-                    }
+                    _currentFlipRotation += 3.14f;
+                    card->flipHalfComplete();
+                    _flippedHalf = true;
                 }
-                else
+                if (_currentFlipRotation > 6.28)
                 {
-                    glUniform1f(rotationY, 0);
+                    card->flipComplete();
+                    _currentFlipRotation = 0;
+                    _flippedHalf = false;
                 }
-                if (card->hasFlipSide() && card->isFlipped())
-                {
-                    glBindTextureUnit(0, flippedTextures[id]);
-                }
-                else
-                {
-                    glBindTextureUnit(0, textures[id]);
-                }
-
-                int selected = listener.getSelectedId();
-                if (listener.isSelectAndMoveInProgress() && selected == id)
-                {
-                    xTrans = converter.screenTranslationXToNDC(deck.get(selected)->getTranslationX() + listener.getMovementX());
-                    yTrans = converter.screenTranslationYToNDC(deck.get(selected)->getTranslationY() + listener.getMovementY());
-                }
-                else
-                {
-                    xTrans = converter.screenTranslationXToNDC(deck.get(id)->getTranslationX());
-                    yTrans = converter.screenTranslationYToNDC(deck.get(id)->getTranslationY());
-                }
-                
-                glUniform2f(translation, xTrans, yTrans);
-                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &(indexData.data())[indexOffsets[id]]);
+            }
+            else
+            {
+                glUniform1f(_rotationYLocation, 0);
+            }
+            if (card->hasFlipSide() && card->isFlipped())
+            {
+                glBindTextureUnit(0, _flippedTextures[id]);
+            }
+            else
+            {
+                glBindTextureUnit(0, _textures[id]);
             }
 
+            int selected = _listener->getSelectedId();
+            if (_listener->isSelectAndMoveInProgress() && selected == id)
+            {
+                xTrans = _converter->screenTranslationXToNDC(_deck->get(selected)->getTranslationX() + _listener->getMovementX());
+                yTrans = _converter->screenTranslationYToNDC(_deck->get(selected)->getTranslationY() + _listener->getMovementY());
+            }
+            else
+            {
+                xTrans = _converter->screenTranslationXToNDC(_deck->get(id)->getTranslationX());
+                yTrans = _converter->screenTranslationYToNDC(_deck->get(id)->getTranslationY());
+            }
+
+            glUniform2f(_translationLocation, xTrans, yTrans);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &(_indexData.data())[_indexOffsets[id]]);
         }
-
-
-        glfwSwapBuffers(window);
-
-        glfwPollEvents();
     }
-
-    glDeleteTextures(deck.size(), textureNames);
-    delete[] textureNames;
-
-    return 0;
 }

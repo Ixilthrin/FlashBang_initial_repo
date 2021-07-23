@@ -9,13 +9,13 @@ private:
     int _mouseX;
     int _mouseY;
     bool _selectAndMoveInProgress;
-	CardDeck *_deck;
+    CardDeck *_deck;
     int _selectionStartX;
     int _selectionStartY;
     int _selectedId;
 
 public:
-	CardDeckInputListener();
+    CardDeckInputListener();
     inline void setDeck(CardDeck *deck)
     {
         _deck = deck;

@@ -9,6 +9,34 @@ namespace fs = std::filesystem;
 #include <stdlib.h> 
 #include <time.h>  
 
+CardDeck::CardDeck()
+{
+
+}
+
+CardDeck::CardDeck(Converter *converter)
+{
+    _converter = converter;
+}
+
+void CardDeck::setConverter(Converter *converter)
+{
+    _converter = converter;
+}
+
+void CardDeck::setUpFromBaseDir(string baseDir)
+{
+    addCardsFromDirectory(baseDir);
+    shuffle();
+
+
+    for (auto const& id : getIds())
+    {
+        auto geometry = new CardGeometry(get(id), _converter);
+        addGeometry(id, geometry);
+    }
+}
+
 void CardDeck::add(int id, Card *card)
 {
     _cards.insert(pair<int, Card*>(id, card));
@@ -216,5 +244,26 @@ void CardDeck::shuffle()
         card->setTranslationY(y);
         x += 1;
         y += 1;
+    }
+}
+
+void CardDeck::getIndexData(vector<unsigned int> &indexData,
+                            map<int, int> &indexOffsets)
+{
+    unsigned int baseIndex = 0;
+
+    int currentIndexOffset = 0;
+    for (auto const &id : getIds())
+    {
+        auto geom = getGeometry(id);
+        auto currentIndices = geom->getIndexData();
+        indexOffsets.insert(pair<int, int>(id, currentIndexOffset));
+        currentIndexOffset += currentIndices.size();
+        for (auto const &value : currentIndices)
+        {
+            auto index = value + baseIndex;
+            indexData.push_back(index);
+        }
+        baseIndex += geom->getPositions().size() / 3;
     }
 }

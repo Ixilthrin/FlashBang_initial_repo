@@ -8,7 +8,7 @@ class CardDeckEventTranslator
 private:
     int _mouseX;
     int _mouseY;
-	CardDeckInputListener *_listener;
+    CardDeckInputListener *_listener;
 
 public:
     enum EventType

@@ -7,6 +7,7 @@
 #include "Card.h"
 #include "CardGeometry.h"
 #include "CardImageData.h"
+#include "Converter.h"
 
 using std::endl;
 using std::cout;
@@ -26,7 +27,12 @@ private:
     map<int, Card*> _cards;
     map<int, CardGeometry*> _geometry;
     map<int, CardImageData*> _imageData;
+    Converter *_converter;
 public:
+    CardDeck();
+    CardDeck(Converter *converter);
+    void setConverter(Converter *converter);
+    void setUpFromBaseDir(string baseDir);
     void add(int id, Card *card);
     void removeCard(int id);
     void addGeometry(int id, CardGeometry *geometry);
@@ -43,4 +49,6 @@ public:
     void addCards(vector<string> filenames);
     void addCardsFromDirectory(string basepath);
     void shuffle();
+    void getIndexData(vector<unsigned int> &indexData,
+                      map<int, int> &indexOffsets);
 };

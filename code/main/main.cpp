@@ -91,14 +91,14 @@ int runBasicProjectionGraphicsLoop()
 
 int runBasicMouseSelection()
 {
-    BasicMouseSelection drawer;
-    return drawer.Start();
+    BasicMouseSelection app;
+    return app.Start();
 }
 
 int runBasicCardDeck()
 {
-    BasicCardDeck drawer;
-    return drawer.Start();
+    BasicCardDeck app;
+    return app.Start();
 }
 
 void showVersionInfo(int result)

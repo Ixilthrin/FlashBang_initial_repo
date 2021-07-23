@@ -39,6 +39,6 @@ public:
     bool requestFlip();
     void flipHalfComplete();
     void flipComplete();
-	static std::string getVertexShaderPath();
-	static std::string getFragmentShaderPath();
+    static std::string getVertexShaderPath();
+    static std::string getFragmentShaderPath();
 };
