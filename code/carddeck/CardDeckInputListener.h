@@ -1,24 +1,24 @@
 #pragma once
 
-#include "Scene.h"
+#include "CardDeck.h"
 #include "Card.h"
 
-class InputListener
+class CardDeckInputListener
 {
 private:
     int _mouseX;
     int _mouseY;
     bool _selectAndMoveInProgress;
-    Scene *_scene;
+	CardDeck *_deck;
     int _selectionStartX;
     int _selectionStartY;
     int _selectedId;
 
 public:
-    InputListener();
-    inline void setScene(Scene *scene)
+	CardDeckInputListener();
+    inline void setDeck(CardDeck *deck)
     {
-        _scene = scene;
+        _deck = deck;
     }
 
     inline int getMovementX()

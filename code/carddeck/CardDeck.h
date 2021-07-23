@@ -19,7 +19,7 @@ using std::map;
 using std::pair;
 using std::vector;
 
-class Scene
+class CardDeck
 {
 private:
     vector<int> _ids;

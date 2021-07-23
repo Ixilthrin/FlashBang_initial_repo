@@ -1,14 +1,14 @@
 #pragma once
 
-#include "EventTranslator.h"
+#include "CardDeckEventTranslator.h"
 
 class GLFWwindow;
 
-class DispatchingMouseHandlers
+class CardDeckDispatchingMouseHandlers
 {
 public:
 
-    static EventTranslator *translator;
+    static CardDeckEventTranslator *translator;
 
     static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
     static void cursor_enter_callback(GLFWwindow* window, int entered);

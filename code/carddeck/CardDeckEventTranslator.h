@@ -1,14 +1,14 @@
 #pragma once
 
-#include "InputListener.h"
+#include "CardDeckInputListener.h"
 
 
-class EventTranslator
+class CardDeckEventTranslator
 {
 private:
     int _mouseX;
     int _mouseY;
-    InputListener *_listener;
+	CardDeckInputListener *_listener;
 
 public:
     enum EventType
@@ -19,7 +19,7 @@ public:
         RightMouseUp
     };
 
-    void registerListener(InputListener *listener);
+    void registerListener(CardDeckInputListener *listener);
     void mouseMoved(int x, int y);
     void translateMouseEvent(EventType type);
 

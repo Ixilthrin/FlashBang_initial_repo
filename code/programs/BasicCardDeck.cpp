@@ -20,10 +20,10 @@ using std::map;
 using std::pair;
 using std::vector;
 
-#include "DispatchingMouseHandlers.h" // Interesting: putting this after next line causes link errors
+#include "CardDeckDispatchingMouseHandlers.h" // Interesting: putting this after next line causes link errors
 #include <GLFW/glfw3.h>
 
-#include "Scene.h"
+#include "CardDeck.h"
 #include "Card.h"
 #include "CardGeometry.h"
 #include "Converter.h"
@@ -72,17 +72,17 @@ int BasicCardDeck::Start()
 
     string basedir = "c:/programming/FlashBangProject/" + targetFile + "/";
 
-    Scene scene;
+    CardDeck deck;
 
-    scene.addCardsFromDirectory(basedir);
-    scene.shuffle();
+    deck.addCardsFromDirectory(basedir);
+    deck.shuffle();
 
     Converter converter{ width, height };
 
-    for (auto const& id : scene.getIds())
+    for (auto const& id : deck.getIds())
     {
-        auto geometry = new CardGeometry(scene.get(id), &converter);
-        scene.addGeometry(id, geometry);
+        auto geometry = new CardGeometry(deck.get(id), &converter);
+        deck.addGeometry(id, geometry);
     }
 
     GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
@@ -91,7 +91,7 @@ int BasicCardDeck::Start()
 
     GLuint programHandle = ShaderProgramFactory::BuildShaderProgram(
         Card::getVertexShaderPath(),
-        Card::getFragmentShaderPath()
+        Card::getFragmentShaderPath() 
     );
 
     glUseProgram(programHandle);
@@ -102,18 +102,18 @@ int BasicCardDeck::Start()
     //glDeleteShader(vertShader);
     //glDeleteShader(fragShader);
 
-    InputListener listener;
-    listener.setScene(&scene);
+	CardDeckInputListener listener;
+    listener.setDeck(&deck);
 
     int positionLength = 0;
     int colorLength = 0;
     int texCoordLength = 0; 
     
-    for (auto const& id : scene.getIds())
+    for (auto const& id : deck.getIds())
     {
-        positionLength += scene.getGeometry(id)->getPositions().size();
-        colorLength += scene.getGeometry(id)->getColors().size();
-        texCoordLength += scene.getGeometry(id)->getTexCoords().size();
+        positionLength += deck.getGeometry(id)->getPositions().size();
+        colorLength += deck.getGeometry(id)->getColors().size();
+        texCoordLength += deck.getGeometry(id)->getTexCoords().size();
     }
 
     GLuint vboHandles[4];
@@ -134,9 +134,9 @@ int BasicCardDeck::Start()
     int colorsOffset = 0;
     int texCoordsOffset = 0;
 
-    for (auto const& id : scene.getIds())
+    for (auto const& id : deck.getIds())
     {
-        auto geometry = scene.getGeometry(id);
+        auto geometry = deck.getGeometry(id);
 
         auto positions = geometry->getPositions();
         auto positionsSize = positions.size() * sizeof(float);
@@ -160,9 +160,9 @@ int BasicCardDeck::Start()
 
     map<int, int> indexOffsets;
     int currentIndexOffset = 0;
-    for (auto const &id : scene.getIds())
+    for (auto const &id : deck.getIds())
     {
-        auto geom = scene.getGeometry(id);
+        auto geom = deck.getGeometry(id);
         auto currentIndices = geom->getIndexData();
         indexOffsets.insert(pair<int, int>(id, currentIndexOffset));
         currentIndexOffset += currentIndices.size();
@@ -205,7 +205,7 @@ int BasicCardDeck::Start()
     GLint rotationY = glGetUniformLocation(programHandle, "RotationY");
     GLint objectWidth = glGetUniformLocation(programHandle, "ObjectWidth");
     
-    int numberOfTexturesNeeded = scene.numberOfCardSides();
+    int numberOfTexturesNeeded = deck.numberOfCardSides();
     GLuint *textureNames = new GLuint[numberOfTexturesNeeded];
     glCreateTextures(GL_TEXTURE_2D, numberOfTexturesNeeded, textureNames);
 
@@ -214,9 +214,9 @@ int BasicCardDeck::Start()
     int textureNameIndex = 0;
 
     vector<int> toBeRemoved;
-    for (auto const &id : scene.getIds()) 
+    for (auto const &id : deck.getIds())
     {
-        auto imageReader = scene.getImageData(id)->getImageReader();
+        auto imageReader = deck.getImageData(id)->getImageReader();
         GLubyte* image = imageReader->getImageData();
         int imageWidth = imageReader->getWidth();
         int imageHeight = imageReader->getHeight();
@@ -242,19 +242,19 @@ int BasicCardDeck::Start()
 
     for (auto const &id : toBeRemoved)
     {
-        scene.removeCard(id);
+		deck.removeCard(id);
     }
 
-    for (auto const &id : scene.getIds())
+    for (auto const &id : deck.getIds())
     {
-        if (!scene.get(id)->hasFlipSide())
+        if (!deck.get(id)->hasFlipSide())
         {
             continue;
         }
 
         flippedTextures.insert(pair<int, GLuint>(id, textureNames[textureNameIndex]));
 
-        auto reader = scene.getImageData(id)->getBackImageReader();
+        auto reader = deck.getImageData(id)->getBackImageReader();
 
         GLubyte* image = reader->getImageData();
         int imageWidth = reader->getWidth();
@@ -270,14 +270,14 @@ int BasicCardDeck::Start()
         ++textureNameIndex;
     }
 
-    EventTranslator translator;
+	CardDeckEventTranslator translator;
 
-    DispatchingMouseHandlers::translator = &translator;
+	CardDeckDispatchingMouseHandlers::translator = &translator;
     translator.registerListener(&listener);
-    glfwSetCursorPosCallback(window, DispatchingMouseHandlers::cursor_position_callback);
-    glfwSetCursorEnterCallback(window, DispatchingMouseHandlers::cursor_enter_callback);
-    glfwSetMouseButtonCallback(window, DispatchingMouseHandlers::mouse_button_callback);
-    glfwSetScrollCallback(window, DispatchingMouseHandlers::scroll_callback);
+    glfwSetCursorPosCallback(window, CardDeckDispatchingMouseHandlers::cursor_position_callback);
+    glfwSetCursorEnterCallback(window, CardDeckDispatchingMouseHandlers::cursor_enter_callback);
+    glfwSetMouseButtonCallback(window, CardDeckDispatchingMouseHandlers::mouse_button_callback);
+    glfwSetScrollCallback(window, CardDeckDispatchingMouseHandlers::scroll_callback);
 
     glfwSwapInterval(1);
     glBindVertexArray(vaoHandle);
@@ -303,10 +303,10 @@ int BasicCardDeck::Start()
             float xTrans, yTrans;
 
             int objectCount = 0;
-            vector<int> ids = scene.getIds();
+            vector<int> ids = deck.getIds();
             for (auto const& id : ids)
             {
-                auto card = scene.get(id);
+                auto card = deck.get(id);
                 if (card->hasFlipSide() && card->requestFlip())
                 {
                     glUniform1f(rotationY, rot);
@@ -341,13 +341,13 @@ int BasicCardDeck::Start()
                 int selected = listener.getSelectedId();
                 if (listener.isSelectAndMoveInProgress() && selected == id)
                 {
-                    xTrans = converter.screenTranslationXToNDC(scene.get(selected)->getTranslationX() + listener.getMovementX());
-                    yTrans = converter.screenTranslationYToNDC(scene.get(selected)->getTranslationY() + listener.getMovementY());
+                    xTrans = converter.screenTranslationXToNDC(deck.get(selected)->getTranslationX() + listener.getMovementX());
+                    yTrans = converter.screenTranslationYToNDC(deck.get(selected)->getTranslationY() + listener.getMovementY());
                 }
                 else
                 {
-                    xTrans = converter.screenTranslationXToNDC(scene.get(id)->getTranslationX());
-                    yTrans = converter.screenTranslationYToNDC(scene.get(id)->getTranslationY());
+                    xTrans = converter.screenTranslationXToNDC(deck.get(id)->getTranslationX());
+                    yTrans = converter.screenTranslationYToNDC(deck.get(id)->getTranslationY());
                 }
                 
                 glUniform2f(translation, xTrans, yTrans);
@@ -362,7 +362,7 @@ int BasicCardDeck::Start()
         glfwPollEvents();
     }
 
-    glDeleteTextures(scene.size(), textureNames);
+    glDeleteTextures(deck.size(), textureNames);
     delete[] textureNames;
 
     return 0;

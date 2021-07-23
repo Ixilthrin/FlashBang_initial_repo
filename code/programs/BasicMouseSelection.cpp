@@ -14,7 +14,7 @@ using std::string;
 using std::ifstream;
 using std::stringstream;
 
-#include "DispatchingMouseHandlers.h" // Interesting: putting this after next line causes link errors
+#include "CardDeckDispatchingMouseHandlers.h" // Interesting: putting this after next line causes link errors
 #include <GLFW/glfw3.h>
 
 #include "ShaderSource.h"
@@ -111,8 +111,8 @@ int BasicMouseSelection::Start()
     GLuint vaoHandle;
 
     Card card{ 200, 100, 20, 50 };
-    Scene scene;
-    scene.add(0, &card);
+    CardDeck deck;
+    deck.add(0, &card);
 
     Converter converter{ width, height };
 
@@ -203,8 +203,8 @@ int BasicMouseSelection::Start()
     glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(2, 2);
 
-    InputListener listener;
-    listener.setScene(&scene);
+	CardDeckInputListener listener;
+    listener.setDeck(&deck);
 
     GLint loc = glGetUniformLocation(programHandle, "Translation");
 
@@ -238,14 +238,14 @@ int BasicMouseSelection::Start()
 
     glBindTextureUnit(0, textureNames[0]);
 
-    EventTranslator translator;
+	CardDeckEventTranslator translator;
 
-    DispatchingMouseHandlers::translator = &translator;
+	CardDeckDispatchingMouseHandlers::translator = &translator;
     translator.registerListener(&listener);
-    glfwSetCursorPosCallback(window, DispatchingMouseHandlers::cursor_position_callback);
-    glfwSetCursorEnterCallback(window, DispatchingMouseHandlers::cursor_enter_callback);
-    glfwSetMouseButtonCallback(window, DispatchingMouseHandlers::mouse_button_callback);
-    glfwSetScrollCallback(window, DispatchingMouseHandlers::scroll_callback);
+    glfwSetCursorPosCallback(window, CardDeckDispatchingMouseHandlers::cursor_position_callback);
+    glfwSetCursorEnterCallback(window, CardDeckDispatchingMouseHandlers::cursor_enter_callback);
+    glfwSetMouseButtonCallback(window, CardDeckDispatchingMouseHandlers::mouse_button_callback);
+    glfwSetScrollCallback(window, CardDeckDispatchingMouseHandlers::scroll_callback);
 
 
     while (!glfwWindowShouldClose(window))

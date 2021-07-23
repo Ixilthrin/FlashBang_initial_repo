@@ -1,10 +1,10 @@
-#include "InputListener.h"
+#include "CardDeckInputListener.h"
 
 #include <iostream>
 #include <vector>
 using std::vector;
 
-InputListener::InputListener()
+CardDeckInputListener::CardDeckInputListener()
 {
     _selectAndMoveInProgress = false;
     _mouseX = 0;
@@ -14,13 +14,13 @@ InputListener::InputListener()
     _selectedId = -1;
 }
 
-void InputListener::select(int x, int y)
+void CardDeckInputListener::select(int x, int y)
 {
-    vector<int> ids = _scene->getIds();
+    vector<int> ids = _deck->getIds();
     auto it = ids.rbegin();
     while (it != ids.rend())
     {
-        Card *card = _scene->get(*it);
+        Card *card = _deck->get(*it);
         if (card && card->contains(x, y))
         {
             if (!_selectAndMoveInProgress)
@@ -31,7 +31,7 @@ void InputListener::select(int x, int y)
                 _mouseY = y;
             }
             _selectedId = *it;
-            _scene->bringToTop(*it);
+            _deck->bringToTop(*it);
             _selectAndMoveInProgress = true;
             break;
         }
@@ -39,9 +39,9 @@ void InputListener::select(int x, int y)
     }
 }
 
-void InputListener::moveSelection(int x, int y)
+void CardDeckInputListener::moveSelection(int x, int y)
 {
-    Card *card = _scene->get(_selectedId);
+    Card *card = _deck->get(_selectedId);
     if (_selectAndMoveInProgress)
     {
         _mouseX = x;
@@ -53,9 +53,9 @@ void InputListener::moveSelection(int x, int y)
     }
 }
 
-void InputListener::endSelect(int x, int y)
+void CardDeckInputListener::endSelect(int x, int y)
 {
-    Card *card = _scene->get(_selectedId);
+    Card *card = _deck->get(_selectedId);
     if (_selectAndMoveInProgress && card)
     {
         card->setTranslationX(card->getTranslationX() + _mouseX - _selectionStartX);
@@ -69,39 +69,39 @@ void InputListener::endSelect(int x, int y)
     _selectedId = -1;
 }
 
-void InputListener::flip(int x, int y)
+void CardDeckInputListener::flip(int x, int y)
 {
-    auto ids = _scene->getIds();
+    auto ids = _deck->getIds();
     auto it = ids.rbegin();
     while (it != ids.rend())
     {
-        Card *card = _scene->get(*it);
+        Card *card = _deck->get(*it);
         if (card && card->contains(x, y))
         {
             card->flip();
-            _scene->bringToTop(*it);
+            _deck->bringToTop(*it);
             break;
         }
         it++;
     }
 }
 
-bool InputListener::isSelectAndMoveInProgress()
+bool CardDeckInputListener::isSelectAndMoveInProgress()
 {
     return _selectAndMoveInProgress;
 }
 
-int InputListener::getMouseX()
+int CardDeckInputListener::getMouseX()
 {
     return _mouseX;
 }
 
-int InputListener::getMouseY()
+int CardDeckInputListener::getMouseY()
 {
     return _mouseY;
 }
 
-int InputListener::getSelectedId()
+int CardDeckInputListener::getSelectedId()
 {
     return _selectedId;
 }

@@ -1,4 +1,4 @@
-#include "Scene.h"
+#include "CardDeck.h"
 #include "CardGeometry.h"
 
 #include "ImageReader.h"
@@ -9,34 +9,34 @@ namespace fs = std::filesystem;
 #include <stdlib.h> 
 #include <time.h>  
 
-void Scene::add(int id, Card *card)
+void CardDeck::add(int id, Card *card)
 {
     _cards.insert(pair<int, Card*>(id, card));
     _ids.push_back(id);
 }
 
-void Scene::removeCard(int id)
+void CardDeck::removeCard(int id)
 {
     _cards.erase(id);
     _ids.erase(std::remove(_ids.begin(), _ids.end(), id));
 }
 
-void Scene::addGeometry(int id, CardGeometry *geometry)
+void CardDeck::addGeometry(int id, CardGeometry *geometry)
 {
     _geometry.insert(pair<int, CardGeometry*>(id, geometry));
 }
 
-void Scene::addImageData(int id, CardImageData *data)
+void CardDeck::addImageData(int id, CardImageData *data)
 {
     _imageData.insert(pair<int, CardImageData*>(id, data));
 }
 
-int Scene::size()
+int CardDeck::size()
 {
     return _cards.size();
 }
 
-int Scene::numberOfCardSides()
+int CardDeck::numberOfCardSides()
 {
     int numberOfSides = 0;
     for (auto const& cardPair : _cards)
@@ -49,27 +49,27 @@ int Scene::numberOfCardSides()
     return numberOfSides;
 }
 
-vector<int> Scene::getIds()
+vector<int> CardDeck::getIds()
 {
     return _ids;
 }
 
-Card *Scene::get(int id)
+Card *CardDeck::get(int id)
 {
     return _cards[id];
 }
 
-CardGeometry* Scene::getGeometry(int id)
+CardGeometry* CardDeck::getGeometry(int id)
 {
     return _geometry[id];
 }
 
-CardImageData* Scene::getImageData(int id)
+CardImageData* CardDeck::getImageData(int id)
 {
     return _imageData[id];
 }
 
-void Scene::bringToTop(int id)
+void CardDeck::bringToTop(int id)
 {
     auto position = std::find(_ids.begin(), _ids.end(), id);
     if (position != _ids.end())
@@ -81,7 +81,7 @@ void Scene::bringToTop(int id)
     _ids.push_back(id);
 }
 
-void Scene::addImageCard(int id, int x, int y,
+void CardDeck::addImageCard(int id, int x, int y,
     string imageFile, string backImageFile)
 {
     CardImageData *imageData = new CardImageData(imageFile);
@@ -109,7 +109,7 @@ void Scene::addImageCard(int id, int x, int y,
     addImageData(id, imageData);
 }
 
-void Scene::addCards(vector<string> filenames)
+void CardDeck::addCards(vector<string> filenames)
 {
     int x = 50;
     int y = 50;
@@ -125,7 +125,7 @@ void Scene::addCards(vector<string> filenames)
     }
 }
 
-void Scene::addCardsFromDirectory(string basepath)
+void CardDeck::addCardsFromDirectory(string basepath)
 {
     int x = 50;
     int y = 50;
@@ -189,7 +189,7 @@ void Scene::addCardsFromDirectory(string basepath)
     }
 }
 
-void Scene::shuffle()
+void CardDeck::shuffle()
 {    
     srand(time(NULL));
 

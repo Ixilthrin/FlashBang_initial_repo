@@ -1,18 +1,18 @@
-#include "EventTranslator.h"
+#include "CardDeckEventTranslator.h"
 
-void EventTranslator::registerListener(InputListener *listener)
+void CardDeckEventTranslator::registerListener(CardDeckInputListener *listener)
 {
     _listener = listener;
 }
 
-void EventTranslator::mouseMoved(int x, int y)
+void CardDeckEventTranslator::mouseMoved(int x, int y)
 {
     _listener->moveSelection(x, y);
     _mouseX = x;
     _mouseY = y;
 }
 
-void EventTranslator::translateMouseEvent(EventType type)
+void CardDeckEventTranslator::translateMouseEvent(EventType type)
 {
     if (_listener && type == LeftMouseDown)
     {
