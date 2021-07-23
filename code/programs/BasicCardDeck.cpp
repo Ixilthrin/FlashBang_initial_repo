@@ -109,11 +109,13 @@ int BasicCardDeck::loadDeck()
         getline(myfile, targetFile);
         myfile.close();
     }
-    string baseDir = "c:/programming/FlashBangProject/" + targetFile + "/";
+    string baseDir = "c:/programming/FlashBangProject/decks/" + targetFile + "/";
 
     _converter = new Converter(_width, _height);
     _deck->setConverter(_converter);
     _deck->setUpFromBaseDir(baseDir);
+
+	glfwSetWindowTitle(_window, targetFile.c_str());
     return 0;
 }
 
