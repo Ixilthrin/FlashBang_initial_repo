@@ -1,4 +1,11 @@
 # FlashBang
+
+A series of programs excercizing modern OpenGL and C++.
+
+In particular, "program 10" is an index card simulation program which can 
+be used for quick conceptualization of problems and solutions.  Also can
+be used to play a card game.
+
 I created this repository a while back as just a name because I thought 
 FlashBang was a great name for a graphics engine + sound project. 
 
