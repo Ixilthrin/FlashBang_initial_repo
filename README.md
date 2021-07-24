@@ -1,6 +1,6 @@
 # FlashBang
 
-A series of programs excercizing modern OpenGL and C++.
+A series of programs exercising modern OpenGL and C++.
 
 In particular, "program 10" is an index card simulation program which can 
 be used for quick conceptualization of problems and solutions.  Also can
