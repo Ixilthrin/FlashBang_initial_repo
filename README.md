@@ -66,8 +66,9 @@ the width.  Also added translucency for pure white (R=1.0, G=1.0, B=1.0).  This 
 well with paint programs that do not support an alpha channel and default to a pure 
 white background for images.
 
-Added animation rotation of cards.  From a graphical point of view this is a really nice
+Added animated flipping of cards.  From a graphical point of view this is a really nice
 enhancement.  I still want to refactor the animation into a separate Action object, with
-a name like FlipAction.  But for now I think program 10 is done.  Further refactorings 
-should be applied to a new program number.
+a name like FlipAction.  
 
+Added support for playing sound effects.  Sound plays for sliding and flipping.  (sound 
+files not included in this repo)
