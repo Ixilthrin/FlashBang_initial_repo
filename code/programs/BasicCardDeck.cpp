@@ -363,7 +363,7 @@ void BasicCardDeck::renderFrame()
             {
                 glUniform1f(_rotationYLocation, _currentFlipRotation);
                 glUniform1f(_objectWidthLocation, _converter->screenTranslationXToNDC(card->getWidth()));
-                _currentFlipRotation += .15;
+                _currentFlipRotation += .25;
                 if (_currentFlipRotation > 1.57 && !_flippedHalf)
                 {
                     _currentFlipRotation += 3.14f;

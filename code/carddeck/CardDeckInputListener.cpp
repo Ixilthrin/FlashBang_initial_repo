@@ -89,9 +89,12 @@ void CardDeckInputListener::flip(int x, int y)
         Card *card = _deck->get(*it);
         if (card && card->contains(x, y))
         {
-            card->flip();
-			_deck->playSound(1);
-            _deck->bringToTop(*it);
+			if (card->hasFlipSide())
+			{
+				card->flip();
+				_deck->playSound(1);
+				_deck->bringToTop(*it);
+			}
             break;
         }
         it++;
