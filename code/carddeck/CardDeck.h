@@ -54,4 +54,5 @@ public:
     void getIndexData(vector<unsigned int> &indexData,
                       map<int, int> &indexOffsets);
 	void playSound(int index);
+	void stopSound(int index);
 };

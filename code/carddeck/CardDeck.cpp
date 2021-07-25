@@ -275,3 +275,9 @@ void CardDeck::playSound(int index)
 {
 	_audioPlayer->play(index);
 }
+
+void CardDeck::stopSound(int index)
+{
+	_audioPlayer->stop(index);
+}
+

@@ -132,10 +132,10 @@ void SoundStore::setup()
     WaveReader *wavReader = new WaveReader();
     AIFFReader *aiffReader = new AIFFReader();
 
-    SoundData *soundData = wavReader->getSoundData("c:/programming/FlashBangProject/resources/sliding.wav");
+    SoundData *soundData = wavReader->getSoundData("c:/programming/FlashBangProject/resources/sliding2.wav");
     fillBuffer(0, soundData);
 
-    soundData = wavReader->getSoundData("c:/programming/FlashBangProject/resources/flipping2.wav");
+    soundData = wavReader->getSoundData("c:/programming/FlashBangProject/resources/flipping5.wav");
     fillBuffer(1, soundData);
 
     // Bind buffer with a source.
@@ -177,6 +177,11 @@ void SoundStore::setup()
 
 void SoundStore::play(int sound)
 {
-    alSourceStop(source[sound]);
+	stop(sound);
     alSourcePlay(source[sound]);
+}
+
+void SoundStore::stop(int sound)
+{
+	alSourceStop(source[sound]);
 }

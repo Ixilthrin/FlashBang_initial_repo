@@ -86,6 +86,7 @@ public:
     virtual ~SoundStore();
     void setup();
     void play(int sound);
+	void stop(int sound);
 };
 
 

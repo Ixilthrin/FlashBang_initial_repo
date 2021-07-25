@@ -77,6 +77,7 @@ void CardDeckInputListener::endSelect(int x, int y)
     }
     _selectAndMoveInProgress = false;
     _selectedId = -1;
+	_deck->stopSound(0);
 }
 
 void CardDeckInputListener::flip(int x, int y)
