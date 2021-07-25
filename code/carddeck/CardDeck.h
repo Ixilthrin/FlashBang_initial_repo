@@ -29,7 +29,7 @@ private:
     map<int, CardGeometry*> _geometry;
     map<int, CardImageData*> _imageData;
     Converter *_converter;
-	SoundStore *_audioPlayer;
+    SoundStore *_audioPlayer;
 public:
     CardDeck();
     CardDeck(Converter *converter);
@@ -53,6 +53,6 @@ public:
     void shuffle();
     void getIndexData(vector<unsigned int> &indexData,
                       map<int, int> &indexOffsets);
-	void playSound(int index);
-	void stopSound(int index);
+    void playSound(int index);
+    void stopSound(int index);
 };

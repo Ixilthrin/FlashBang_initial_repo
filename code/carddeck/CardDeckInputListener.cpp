@@ -18,7 +18,7 @@ bool slideSoundPlayed = true;
 
 void CardDeckInputListener::select(int x, int y)
 {
-	slideSoundPlayed = false;
+    slideSoundPlayed = false;
 
     vector<int> ids = _deck->getIds();
     auto it = ids.rbegin();
@@ -56,11 +56,11 @@ void CardDeckInputListener::moveSelection(int x, int y)
         //std::cout << "Mouse Over" << std::endl;
     }
 
-	if (!slideSoundPlayed)
-	{
-		_deck->playSound(0);
-		slideSoundPlayed = true;
-	}
+    if (!slideSoundPlayed)
+    {
+        _deck->playSound(0);
+        slideSoundPlayed = true;
+    }
 }
 
 void CardDeckInputListener::endSelect(int x, int y)
@@ -77,7 +77,7 @@ void CardDeckInputListener::endSelect(int x, int y)
     }
     _selectAndMoveInProgress = false;
     _selectedId = -1;
-	_deck->stopSound(0);
+    _deck->stopSound(0);
 }
 
 void CardDeckInputListener::flip(int x, int y)
@@ -89,12 +89,12 @@ void CardDeckInputListener::flip(int x, int y)
         Card *card = _deck->get(*it);
         if (card && card->contains(x, y))
         {
-			if (card->hasFlipSide())
-			{
-				card->flip();
-				_deck->playSound(1);
-				_deck->bringToTop(*it);
-			}
+            if (card->hasFlipSide())
+            {
+                card->flip();
+                _deck->playSound(1);
+                _deck->bringToTop(*it);
+            }
             break;
         }
         it++;
