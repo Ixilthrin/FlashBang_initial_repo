@@ -11,12 +11,15 @@ namespace fs = std::filesystem;
 
 CardDeck::CardDeck()
 {
-
+	_audioPlayer = new SoundStore();
+	_audioPlayer->setup();
 }
 
 CardDeck::CardDeck(Converter *converter)
 {
     _converter = converter;
+	_audioPlayer = new SoundStore();
+	_audioPlayer->setup();
 }
 
 void CardDeck::setConverter(Converter *converter)
@@ -266,4 +269,9 @@ void CardDeck::getIndexData(vector<unsigned int> &indexData,
         }
         baseIndex += geom->getPositions().size() / 3;
     }
+}
+
+void CardDeck::playSound(int index)
+{
+	_audioPlayer->play(index);
 }

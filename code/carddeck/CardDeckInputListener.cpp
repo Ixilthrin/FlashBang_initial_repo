@@ -14,8 +14,12 @@ CardDeckInputListener::CardDeckInputListener()
     _selectedId = -1;
 }
 
+bool slideSoundPlayed = true;
+
 void CardDeckInputListener::select(int x, int y)
 {
+	slideSoundPlayed = false;
+
     vector<int> ids = _deck->getIds();
     auto it = ids.rbegin();
     while (it != ids.rend())
@@ -51,6 +55,12 @@ void CardDeckInputListener::moveSelection(int x, int y)
     {
         //std::cout << "Mouse Over" << std::endl;
     }
+
+	if (!slideSoundPlayed)
+	{
+		_deck->playSound(0);
+		slideSoundPlayed = true;
+	}
 }
 
 void CardDeckInputListener::endSelect(int x, int y)
@@ -79,6 +89,7 @@ void CardDeckInputListener::flip(int x, int y)
         if (card && card->contains(x, y))
         {
             card->flip();
+			_deck->playSound(1);
             _deck->bringToTop(*it);
             break;
         }
