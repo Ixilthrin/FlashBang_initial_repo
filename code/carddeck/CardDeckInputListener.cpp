@@ -50,16 +50,16 @@ void CardDeckInputListener::moveSelection(int x, int y)
     {
         _mouseX = x;
         _mouseY = y;
+
+        if (!slideSoundPlayed)
+        {
+            _deck->playSound(0);
+            slideSoundPlayed = true;
+        }
     }
     else if (card && card->contains(x, y))
     {
         //std::cout << "Mouse Over" << std::endl;
-    }
-
-    if (!slideSoundPlayed)
-    {
-        _deck->playSound(0);
-        slideSoundPlayed = true;
     }
 }
 
