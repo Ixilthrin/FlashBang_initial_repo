@@ -30,10 +30,12 @@ private:
     map<int, CardImageData*> _imageData;
     Converter *_converter;
     SoundStore *_audioPlayer;
+    float _scale;
 public:
     CardDeck();
     CardDeck(Converter *converter);
     void setConverter(Converter *converter);
+    void setScale(float scale);
     void setUpFromBaseDir(string baseDir);
     void add(int id, Card *card);
     void removeCard(int id);

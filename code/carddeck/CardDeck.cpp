@@ -9,10 +9,8 @@ namespace fs = std::filesystem;
 #include <stdlib.h> 
 #include <time.h>  
 
-CardDeck::CardDeck()
+CardDeck::CardDeck() : CardDeck(nullptr) // c++11 - constructor call
 {
-    _audioPlayer = new SoundStore();
-    _audioPlayer->setup();
 }
 
 CardDeck::CardDeck(Converter *converter)
@@ -20,11 +18,18 @@ CardDeck::CardDeck(Converter *converter)
     _converter = converter;
     _audioPlayer = new SoundStore();
     _audioPlayer->setup();
+    _scale = 1.0f;
 }
 
 void CardDeck::setConverter(Converter *converter)
 {
     _converter = converter;
+}
+
+void CardDeck::setScale(float scale)
+{
+    if (scale > 0)
+        _scale = scale;
 }
 
 void CardDeck::setUpFromBaseDir(string baseDir)
@@ -121,7 +126,10 @@ void CardDeck::addImageCard(int id, int x, int y,
     int width = imageData->getImageReader()->getWidth();
     int height = imageData->getImageReader()->getHeight();
 
-    int maxWidth = 500;
+    width = (float)width * _scale;
+    height = (float)height * _scale;
+
+    int maxWidth = 500 * _scale;
     if (width > maxWidth)
     {
         height = height / (width / maxWidth);

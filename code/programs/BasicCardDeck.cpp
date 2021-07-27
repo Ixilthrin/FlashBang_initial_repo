@@ -102,13 +102,36 @@ int BasicCardDeck::initializeOpenGL()
 
 int BasicCardDeck::loadDeck()
 {
-    string targetFile;
+	string inputString;
+	string targetFile = "";
+	string scale = "";
+
     ifstream myfile("c:/programming/FlashBangProject/flashbang.props");
     if (myfile.is_open())
     {
-        getline(myfile, targetFile);
+		int index = 0;
+		while (getline(myfile, inputString))
+		{
+			switch (index)
+			{
+			case 0:
+				targetFile = inputString;
+				break;
+			case 1:
+				scale = inputString;
+				break;
+			}
+			index++;
+		}
         myfile.close();
     }
+	if (scale.length() > 0)
+	{
+		float scaleValue = std::stof(scale);
+		if (scaleValue > 0)
+			_deck->setScale(scaleValue);
+	}
+
     string baseDir = "c:/programming/FlashBangProject/decks/" + targetFile + "/";
 
     _converter = new Converter(_width, _height);
