@@ -102,35 +102,35 @@ int BasicCardDeck::initializeOpenGL()
 
 int BasicCardDeck::loadDeck()
 {
-	string inputString;
-	string targetFile = "";
-	string scale = "";
+    string inputString;
+    string targetFile = "";
+    string scale = "";
 
     ifstream myfile("c:/programming/FlashBangProject/flashbang.props");
     if (myfile.is_open())
     {
-		int index = 0;
-		while (getline(myfile, inputString))
-		{
-			switch (index)
-			{
-			case 0:
-				targetFile = inputString;
-				break;
-			case 1:
-				scale = inputString;
-				break;
-			}
-			index++;
-		}
+        int index = 0;
+        while (getline(myfile, inputString))
+        {
+            switch (index)
+            {
+            case 0:
+                targetFile = inputString;
+                break;
+            case 1:
+                scale = inputString;
+                break;
+            }
+            index++;
+        }
         myfile.close();
     }
-	if (scale.length() > 0)
-	{
-		float scaleValue = std::stof(scale);
-		if (scaleValue > 0)
-			_deck->setScale(scaleValue);
-	}
+    if (scale.length() > 0)
+    {
+        float scaleValue = std::stof(scale);
+        if (scaleValue > 0)
+            _deck->setScale(scaleValue);
+    }
 
     string baseDir = "c:/programming/FlashBangProject/decks/" + targetFile + "/";
 
@@ -138,7 +138,7 @@ int BasicCardDeck::loadDeck()
     _deck->setConverter(_converter);
     _deck->setUpFromBaseDir(baseDir);
 
-	glfwSetWindowTitle(_window, targetFile.c_str());
+    glfwSetWindowTitle(_window, targetFile.c_str());
     return 0;
 }
 
@@ -279,9 +279,9 @@ int BasicCardDeck::setupTextures()
     {
         auto imageReader = _deck->getImageData(id)->getImageReader();
         GLubyte* image = imageReader->getImageData();
+
         int imageWidth = imageReader->getWidth();
         int imageHeight = imageReader->getHeight();
-
         if (image == 0 || imageWidth == 0 || imageHeight == 0)
         {
             toBeRemoved.push_back(id);
