@@ -23,6 +23,9 @@ using std::vector;
 #include "CardGeometry.h"
 #include "ShaderProgramFactory.h"
 
+//#include <ft2build.h>
+//#include FT_FREETYPE_H  
+
 BasicCardDeck::BasicCardDeck()
 {
     _width = 1600;
@@ -184,11 +187,20 @@ int BasicCardDeck::setupBuffers()
     _texCoordsBufferHandle = vboHandles[2];
     _indexCoordsBufferHandle = vboHandles[3];
 
-    glNamedBufferData(_positionBufferHandle, positionLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    // According to Red Book, glNamedBufferData() and glNamedSubBufferData() should not require
+    // the glBindBuffer() first, but it doesn't work without it.  Also, the Red Book states that
+    // GL_DYNAMIC_BUFFER_BIT should be the enum value, but that doesn't work either.
+    // This is a great example where documentation fails.
 
-    glNamedBufferData(_colorBufferHandle, colorLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, _positionBufferHandle);
+    glNamedBufferData(_positionBufferHandle, positionLength * sizeof(float), nullptr, GL_STATIC_DRAW);
+    cout << "error: " << glGetError() << endl;
 
-    glNamedBufferData(_texCoordsBufferHandle, texCoordLength * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, _colorBufferHandle);
+    glNamedBufferData(_colorBufferHandle, colorLength * sizeof(float), nullptr, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, _texCoordsBufferHandle);
+    glNamedBufferData(_texCoordsBufferHandle, texCoordLength * sizeof(float), nullptr, GL_STATIC_DRAW);
 
     int positionsOffset = 0;
     int colorsOffset = 0;
@@ -200,16 +212,20 @@ int BasicCardDeck::setupBuffers()
 
         auto positions = geometry->getPositions();
         auto positionsSize = positions.size() * sizeof(float);
+        glBindBuffer(GL_ARRAY_BUFFER, _positionBufferHandle);
         glNamedBufferSubData(_positionBufferHandle, positionsOffset, positionsSize, positions.data());
+        
         positionsOffset += positionsSize;
 
         auto colors = geometry->getColors();
         auto colorsSize = colors.size() * sizeof(float);
+        glBindBuffer(GL_ARRAY_BUFFER, _colorBufferHandle);
         glNamedBufferSubData(_colorBufferHandle, colorsOffset, colorsSize, colors.data());
         colorsOffset += colorsSize;
 
         auto texCoords = geometry->getTexCoords();
         auto texCoordsSize = texCoords.size() * sizeof(float);
+        glBindBuffer(GL_ARRAY_BUFFER, _texCoordsBufferHandle);
         glNamedBufferSubData(_texCoordsBufferHandle, texCoordsOffset, texCoordsSize, texCoords.data());
         texCoordsOffset += texCoordsSize;
     }
@@ -251,8 +267,6 @@ int BasicCardDeck::setupBindings()
 
     glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(2, 2);
-
-    glBindVertexArray(vaoHandle);
 
     return 0;
 }
@@ -371,8 +385,9 @@ int BasicCardDeck::setupGlobalGraphicsState()
 
 void BasicCardDeck::renderFrame()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
+    //if (true)
     if (_translationLocation != -1)
     {
         float xTrans, yTrans;
@@ -425,7 +440,8 @@ void BasicCardDeck::renderFrame()
                 yTrans = _converter->screenTranslationYToNDC(_deck->get(id)->getTranslationY());
             }
 
-            glUniform2f(_translationLocation, xTrans, yTrans);
+            glUniform2f(_translationLocation, xTrans, yTrans); 
+
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &(_indexData.data())[_indexOffsets[id]]);
         }
     }

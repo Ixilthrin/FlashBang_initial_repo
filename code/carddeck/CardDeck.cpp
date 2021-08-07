@@ -230,6 +230,9 @@ void CardDeck::addCardsFromDirectory(string basepath)
 
 void CardDeck::shuffle()
 {    
+    if (_ids.size() < 2)
+        return;
+
     srand(time(NULL));
 
     // randomly pick 2 and swap
